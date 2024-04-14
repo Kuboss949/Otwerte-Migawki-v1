@@ -3,7 +3,7 @@ package pl.otwartemigawki.OtwarteMigawkiApp.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import pl.otwartemigawki.OtwarteMigawkiApp.Gallery;
+import pl.otwartemigawki.OtwarteMigawkiApp.model.Gallery;
 
 import java.time.Instant;
 import java.util.LinkedHashSet;

@@ -1,4 +1,4 @@
-package pl.otwartemigawki.OtwarteMigawkiApp;
+package pl.otwartemigawki.OtwarteMigawkiApp.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
