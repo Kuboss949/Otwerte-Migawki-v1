@@ -7,6 +7,6 @@ import java.util.List;
 public interface GalleryService {
 
     List<Gallery> getAllGalleries();
-    Todo createGallery(Gallery Gallery);
+    Gallery createGallery(Gallery Gallery);
     void deleteGallery(Integer id);
 }

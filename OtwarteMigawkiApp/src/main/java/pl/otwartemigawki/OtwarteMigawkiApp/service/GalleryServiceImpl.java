@@ -17,7 +17,7 @@ public class GalleryServiceImpl implements GalleryService {
     }
 
     @Override
-    public Todo createGallery(Gallery Gallery) {
+    public Gallery createGallery(Gallery Gallery) {
         return null;
     }
 
