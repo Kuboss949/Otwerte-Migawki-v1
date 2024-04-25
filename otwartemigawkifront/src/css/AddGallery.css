@@ -1,0 +1,12 @@
+.add-gallery-form{
+    gap: 40px;
+}
+
+.image-drop{
+    border: 3px dashed black;
+    width: 50%;
+    height: 40vh;
+    margin-top: 40px;
+    cursor: pointer;
+    border-radius: 30px;
+}

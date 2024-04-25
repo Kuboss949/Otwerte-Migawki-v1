@@ -1,0 +1,80 @@
+#gallery-overview{
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    width: 80%;
+    margin: 20px auto;
+
+}
+
+.gallery-card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: black;
+    position: relative; /* Add position relative for pseudo-element */
+    transition: transform 0.5s ease-out; /* Add transition for scaling */
+}
+
+.gallery-card::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: black;
+    transform-origin: bottom right;
+    transition: transform 0.5s ease-out;
+}
+
+.gallery-card:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+.gallery-card:hover {
+    transform: scale(1.05); /* Scale up on hover */
+}
+
+.gallery-thumbnail {
+    border-radius: 30px;
+    width: 100%;
+}
+
+.gallery-desc {
+    margin: 5px;
+    text-decoration: none;
+    color: black;
+}
+
+.gallery-desc:hover {
+    text-decoration: underline;
+}
+
+.gallery-thumbnail{
+    border-radius: 30px;
+    width: 100%;
+    
+}
+.gallery-desc{
+    margin: 5px;
+}
+
+.gallery-card:hover{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: black;
+}
+
+.gallery-overview-header{
+    flex-direction: column;
+}

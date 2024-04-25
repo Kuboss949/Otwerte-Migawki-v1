@@ -1,0 +1,30 @@
+#gallery-header {
+    width: 70%;
+    margin: 30px auto;
+    display: grid; /* Use grid display */
+    grid-template-rows: 1fr; /* Single column */
+    grid-template-columns: repeat(3, 1fr); /* Three rows */
+    justify-items: center; /* Center items horizontally */
+    align-items: center; /* Center items vertically */
+}
+
+#gallery-header h3{
+    justify-self: start;
+}
+
+#gallery-header button{
+    justify-self: end;
+}
+#gallery-header h1 {
+    justify-self: center; /* Center h1 horizontally */
+}
+
+#ReactGridGallery{
+    width: 70%;
+    margin: 0 auto;
+}
+
+.ReactGridGallery_tile{
+    border-radius: 20px;
+    overflow: hidden;
+}

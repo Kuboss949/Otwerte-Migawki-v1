@@ -1,0 +1,15 @@
+.login-page{
+    flex-direction: column;
+    gap: 40px;
+    height: 75vh;
+    width: 100vw;
+}
+
+.login-form{
+    flex-direction: column;
+    gap: 20px;
+}
+
+.login-page-link{
+    color:black;
+}

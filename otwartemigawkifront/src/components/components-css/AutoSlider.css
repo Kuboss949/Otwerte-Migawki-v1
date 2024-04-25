@@ -1,0 +1,8 @@
+.slider-img {
+    width: 100%; /* Adjust the width as needed */
+    margin: 0 10px;
+}
+.slider-container{
+    margin-top: 5vh;
+    height: 20vh;
+}

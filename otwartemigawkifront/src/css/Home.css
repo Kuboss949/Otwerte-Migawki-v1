@@ -1,0 +1,7 @@
+
+.about-me{
+    height: 30vh;
+    flex-direction: column;
+    width: 50%;
+    margin: 80px auto;
+}

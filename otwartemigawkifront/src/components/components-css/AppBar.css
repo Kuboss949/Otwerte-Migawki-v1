@@ -1,0 +1,43 @@
+.header-link{
+    font-size: 1.5em;
+}
+
+.link {
+    text-decoration: none;
+    color: black;
+    display: inline-block;
+    position: relative;
+}
+
+
+.link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: black;
+    transform-origin: bottom right;
+    transition: transform 0.5s ease-out;
+}
+
+.link:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+
+#menu {
+    width: 60%;
+    height: 15vh;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    margin: 0 auto; 
+}
+
+#menu img{
+    height: 90%;
+}
