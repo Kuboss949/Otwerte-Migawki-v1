@@ -1,1 +1,24 @@
 OtwarteMigawkiApp/.idea/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/otwartemigawkifront/node_modules
+/otwartemigawkifront/.pnp
+/otwartemigawkifront/.pnp.js
+
+# testing
+/otwartemigawkifront/coverage
+
+# production
+/otwartemigawkifront/build
+
+# misc
+/otwartemigawkifront/.DS_Store
+/otwartemigawkifront/.env.local
+/otwartemigawkifront/.env.development.local
+/otwartemigawkifront/.env.test.local
+/otwartemigawkifront/.env.production.local
+
+/otwartemigawkifront/npm-debug.log*
+/otwartemigawkifront/yarn-debug.log*
+/otwartemigawkifront/yarn-error.log*
