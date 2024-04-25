@@ -2,23 +2,62 @@ OtwarteMigawkiApp/.idea/
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/otwartemigawkifront/node_modules
-/otwartemigawkifront/.pnp
-/otwartemigawkifront/.pnp.js
+otwartemigawkifront/node_modules
+otwartemigawkifront/.pnp
+otwartemigawkifront/.pnp.js
 
 # testing
-/otwartemigawkifront/coverage
+otwartemigawkifront/coverage
 
 # production
-/otwartemigawkifront/build
+otwartemigawkifront/build
 
 # misc
-/otwartemigawkifront/.DS_Store
-/otwartemigawkifront/.env.local
-/otwartemigawkifront/.env.development.local
-/otwartemigawkifront/.env.test.local
-/otwartemigawkifront/.env.production.local
+otwartemigawkifront/.DS_Store
+otwartemigawkifront/.env.local
+otwartemigawkifront/.env.development.local
+otwartemigawkifront/.env.test.local
+otwartemigawkifront/.env.production.local
 
-/otwartemigawkifront/npm-debug.log*
-/otwartemigawkifront/yarn-debug.log*
-/otwartemigawkifront/yarn-error.log*
+otwartemigawkifront/npm-debug.log*
+otwartemigawkifront/yarn-debug.log*
+otwartemigawkifront/yarn-error.log*
+
+# Ignore files
+OtwarteMigawkiApp/HELP.md
+
+# Ignore directories
+OtwarteMigawkiApp/target/
+OtwarteMigawkiApp/!.mvn/wrapper/maven-wrapper.jar
+
+# Allow target directories under src/main and src/test
+OtwarteMigawkiApp/!**/src/main/**/target/
+OtwarteMigawkiApp/!**/src/test/**/target/
+
+# STS
+OtwarteMigawkiApp/.apt_generated
+OtwarteMigawkiApp/.classpath
+OtwarteMigawkiApp/.factorypath
+OtwarteMigawkiApp/.project
+OtwarteMigawkiApp/.settings
+OtwarteMigawkiApp/.springBeans
+OtwarteMigawkiApp/.sts4-cache
+
+# IntelliJ IDEA
+OtwarteMigawkiApp/.idea
+OtwarteMigawkiApp/*.iws
+OtwarteMigawkiApp/*.iml
+OtwarteMigawkiApp/*.ipr
+
+# NetBeans
+OtwarteMigawkiApp/nbproject/private/
+OtwarteMigawkiApp/nbbuild/
+OtwarteMigawkiApp/dist/
+OtwarteMigawkiApp/nbdist/
+OtwarteMigawkiApp/.nb-gradle/
+OtwarteMigawkiApp/build/
+OtwarteMigawkiApp/!**/src/main/**/build/
+OtwarteMigawkiApp/!**/src/test/**/build/
+
+# VS Code
+OtwarteMigawkiApp/.vscode/
