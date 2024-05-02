@@ -1,0 +1,39 @@
+table {
+	width: 800px;
+	border-collapse: collapse;
+	overflow: hidden;
+	box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+th,
+td {
+	padding: 15px;
+	background-color: rgba(255,255,255,0.2);
+	color: black;
+}
+
+th {
+	text-align: left;
+}
+
+thead {
+	th {
+		background-color: #9c8477;
+	}
+}
+
+.deleteButton{
+    font-size: 1em;
+    background-color: #7e0808;
+    color:white;
+    padding: 10px;
+    border:none;
+    border-radius: 10px;
+}
+
+.deleteButton:hover{
+    transition-duration: 300ms;
+    background-color: #d17c7c;
+    color:rgb(0, 0, 0);
+    cursor: pointer;
+}

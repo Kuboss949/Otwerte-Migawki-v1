@@ -14,7 +14,7 @@ public class UserDetail {
     @Column(name = "id_user_details", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user")
     private User idUser;
 

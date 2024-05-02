@@ -1,43 +1,50 @@
 import {React, useState, useMemo} from 'react';
+import {InputBox} from '../components/InputBox.js';
 import AppBar from '../components/AppBar.js';
-import fakeData from "./clients.json";
-import "../css/ShowClients.css";
+import fakeData from "./sessions.json";
+import "../css/ManageSessions.css";
 import {useTable} from 'react-table'
 
 
-const ShowClients = () => {
+const ManageSessions = () => {
   const data = useMemo( () => fakeData, []);
   const columns = useMemo(()=>[
     {
-      Header: "ID",
-      accessor: "id",
-    },
-    {
-      Header: "Imię",
+      Header: "Nazwa sesji",
       accessor: "name",
     },
     {
-      Header: "Nazwisko",
-      accessor: "surname",
+      Header: "Cena",
+      accessor: "price",
     },
     {
-      Header: "Email",
-      accessor: "email",
-    },
-    {
-      Header: "Nr telefonu",
-      accessor: "phone",
+      Header: "Akcje",
+      Cell: ({ row }) => (
+        <button className='deleteButton' onClick={() => handleDelete(row.original.id)}>Usuń</button>
+      )
     },
   ], 
   []
   )
+
+  const handleDelete = (id) => {
+    // Implement your delete functionality here
+    console.log("Delete button clicked for ID:", id);
+  }
   
   const {getTableProps, getTableBodyProps, headerGroups, rows, prepareRow} = useTable({columns, data})
   
   return (
     <div>
     <AppBar />
-    <h1 className='flex-centered site-header'>Twoje dane</h1>
+    <h1 className='flex-centered site-header'>Sesje</h1>
+    <div className='add-session flex-centered'>
+      <form className='flex-centered' method='POST'>
+        <InputBox label='Nazwa sesji' name='session-name'/>
+        <InputBox label='Cena' name='price'/>
+        <button className='site-button'>Dodaj</button>
+      </form>
+    </div>
     <div className='flex-centered'>
       <table {...getTableProps()}>
         <thead>
@@ -75,8 +82,4 @@ const ShowClients = () => {
 }
 
 
-
-
-
-
-export default ShowClients;
+export default ManageSessions;

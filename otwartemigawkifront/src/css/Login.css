@@ -13,3 +13,13 @@
 .login-page-link{
     color:black;
 }
+
+.register-form-main{
+    flex-direction: row;
+    gap: 20px;
+}
+
+.register-form-column{
+    flex-direction: column;
+    gap: 20px;
+}

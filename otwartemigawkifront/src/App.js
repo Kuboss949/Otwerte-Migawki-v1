@@ -9,7 +9,8 @@ import Account from './pages/Account';
 import Price from './pages/Price';
 import AddGallery from './pages/AddGallery';
 import AddDates from './pages/AddDates';
-import ShowClients from './pages/ShowClients';
+import ManageClients from './pages/ManageClients';
+import ManageSessions from './pages/ManageSessions';
 
 
  
@@ -25,13 +26,14 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/rejestracja" element={<Register />} />
         <Route path="/rezerwacja" element={<Reservation />} />
-        <Route path="/moje-sesje/:id" element={<GalleryOverview />} />
+        <Route path="/moje-sesje" element={<GalleryOverview />} />
         <Route path="/galeria/:id" element={<ClientGallery />} />
-        <Route path="/konto/:id" element={<Account />} />
+        <Route path="/konto" element={<Account />} />
         <Route path="/cennik" element={<Price />} />
         <Route path="/dodaj-galerie" element={<AddGallery />} />
         <Route path="/dodaj-daty" element={<AddDates />} />
-        <Route path="/klienci" element={<ShowClients />} />
+        <Route path="/klienci" element={<ManageClients />} />
+        <Route path="/sesje" element={<ManageSessions />} />
       </Routes>
     </BrowserRouter>
   );

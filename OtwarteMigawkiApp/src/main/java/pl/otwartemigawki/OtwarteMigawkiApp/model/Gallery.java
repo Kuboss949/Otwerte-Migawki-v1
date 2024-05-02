@@ -28,7 +28,7 @@ public class Gallery {
     @Column(name = "gallery_name", length = 100)
     private String galleryName;
 
-    @OneToMany(mappedBy = "gallery")
+    @OneToMany(mappedBy = "idGallery")
     private Set<GalleryPhoto> galleryPhotos = new LinkedHashSet<>();
 
 }

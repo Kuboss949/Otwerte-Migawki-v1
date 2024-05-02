@@ -33,8 +33,8 @@ public class User {
     @Column(name = "is_tmp", nullable = false)
     private Boolean isTmp = false;
 
-    @OneToMany(mappedBy = "idUser")
-    private Set<UserDetail> userDetails = new LinkedHashSet<>();
+    @OneToOne(mappedBy = "idUser")
+    private UserDetail userDetail = null;
 
     @OneToMany(mappedBy = "idUser")
     private Set<UserSession> userSessions = new LinkedHashSet<>();
