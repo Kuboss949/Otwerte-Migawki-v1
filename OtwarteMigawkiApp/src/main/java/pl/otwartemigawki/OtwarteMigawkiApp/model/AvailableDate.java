@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,7 +23,11 @@ public class AvailableDate {
     @JoinColumn(name = "id_session_type")
     private SessionType idSessionType;
 
+
     @Column(name = "date")
-    private Instant date;
+    private LocalDate date;
+
+    @OneToMany(mappedBy = "idAvailableDate")
+    private Set<Time> times = new LinkedHashSet<>();
 
 }

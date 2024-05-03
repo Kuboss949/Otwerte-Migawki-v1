@@ -27,9 +27,6 @@ public class UserSession {
     @JoinColumn(name = "id_user")
     private User idUser;
 
-    @Column(name = "id_tmp_user")
-    private Integer idTmpUser;
-
     @Column(name = "date")
     private Instant date;
 

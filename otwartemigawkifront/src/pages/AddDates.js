@@ -12,6 +12,7 @@ const AddDates = () => {
   let sessionTypes = ['Sesja rodzinna', 'Sesja na dzień mamy']
 
   const handleDateChange = (date) => {
+    console.log(datesTimes);
     setSelectedDate(date);
   };
 

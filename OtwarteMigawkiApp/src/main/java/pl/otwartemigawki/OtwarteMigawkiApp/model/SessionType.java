@@ -26,4 +26,10 @@ public class SessionType {
     @OneToMany(mappedBy = "idSessionType")
     private Set<UserSession> userSessions = new LinkedHashSet<>();
 
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "price", nullable = false)
+    private Integer price;
+
 }

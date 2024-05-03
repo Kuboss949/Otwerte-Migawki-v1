@@ -4,10 +4,7 @@ import exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.otwartemigawki.OtwarteMigawkiApp.dto.ApiResponseDTO;
-import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserRequestDTO;
-import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserSessionDetailsDTO;
-import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserWithDetailsDTO;
+import pl.otwartemigawki.OtwarteMigawkiApp.dto.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.service.RoleService;
 import pl.otwartemigawki.OtwarteMigawkiApp.service.UserService;
@@ -86,8 +83,31 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ApiResponseDTO deleteUser(@PathVariable Integer userId) {
-        return null;
+    public ResponseEntity<ApiResponseDTO> deleteUser(@PathVariable Long userId) {
+        try{
+            userService.deleteUser(userId);
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDTO("User deleted successfully"));
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponseDTO("Failed to delete user: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/temporary")
+    public User createTemporaryUser(@RequestBody TemporaryUserRequestDTO request) {
+
+        User user = new User();
+        user.setIsTmp(true);
+
+        UserDetail userDetail = new UserDetail();
+        userDetail.setIdUser(user);
+        userDetail.setName(request.getName());
+        userDetail.setSurname(request.getSurname());
+
+        userService.saveOrUpdateUser(user);
+        userService.saveOrUpdateUserDetail(userDetail);
+
+        return user;
     }
 
 
