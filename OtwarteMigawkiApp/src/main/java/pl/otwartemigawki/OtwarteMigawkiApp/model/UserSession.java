@@ -30,7 +30,8 @@ public class UserSession {
     @Column(name = "date")
     private Instant date;
 
-    @OneToMany(mappedBy = "idSession")
-    private Set<Gallery> galleries = new LinkedHashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_gallery")
+    private Gallery idGallery;
 
 }

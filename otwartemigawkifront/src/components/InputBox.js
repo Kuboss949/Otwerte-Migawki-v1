@@ -5,7 +5,7 @@ const InputBox = ({ label, name, type="text", placeholder="" }) =>{
     return(
         <div className="floating-label">
                 <label className="form-label">{label}</label>
-                <input className="form-field" placeholder={placeholder} type={type} name={name}/>
+                <input className="form-field" id={name} placeholder={placeholder} type={type} name={name}/>
         </div>
     );
 };

@@ -32,4 +32,7 @@ public class SessionType {
     @Column(name = "price", nullable = false)
     private Integer price;
 
+    @Column(name = "cover_photo_path", length = 50)
+    private String coverPhotoPath;
+
 }

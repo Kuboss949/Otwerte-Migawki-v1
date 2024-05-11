@@ -1,27 +1,52 @@
-import React from 'react';
+import {React, useState, useEffect} from 'react';
 import AppBar from '../components/AppBar.js';
 import "../css/Price.css";
+import { fetchSessionTypes } from '../api/PriceApi.js';
 
 
 const Price = () => {
+  const [sessionsData, setSessionTypes] = useState([]);
+
+  useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const typesData = await fetchSessionTypes();
+                setSessionTypes(typesData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+  }, []);
+  
   return (
     <div>
       <AppBar />
       <h1 className='flex-centered site-header'>Cennik</h1>
       <div className='flex-centered price-segment-main'>
-      <PriceSegment type="Test" price="30" description="Opis pakietu/sesji"/>
-      <PriceSegment type="Test" price="30" description="Opis pakietu/sesji"/>
-      <PriceSegment type="Test" price="30" description="Opis pakietu/sesji"/>
+      {sessionsData.map(session => (
+                <PriceSegment
+                    key={session.sessionTypeId}
+                    type={session.sessionTypeName}
+                    price={session.price}
+                    description={session.description}
+                    photo={session.coverPhotoPath}
+                />
+            ))}
       </div>
     </div>
   );
 }
 
 
-const PriceSegment = ({type, price, description}) =>{
+const PriceSegment = ({type, price, description, photo}) =>{
+  
+
+
   return(
   <div className='price-segment sparkle u-hover--sparkle'>
-    <img src='images/slider/image1.jpg' className='price-segment-image' alt={type}/>
+    <img src={photo} className='price-segment-image' alt={type}/>
     <div className='price-segment-description'>
       <h2>{type}</h2> 
       <h4>{price} PLN</h4>

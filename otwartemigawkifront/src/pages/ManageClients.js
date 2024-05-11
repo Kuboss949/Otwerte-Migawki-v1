@@ -1,12 +1,31 @@
-import {React, useState, useMemo} from 'react';
+import {React, useState, useMemo, useEffect} from 'react';
+import axios from 'axios';
 import AppBar from '../components/AppBar.js';
 import fakeData from "./clients.json";
 import "../css/ManageClients.css";
 import {useTable} from 'react-table'
+import { fetchClients } from '../api/ManageClientsApi.js';
 
 
 const ManageClients = () => {
-  const data = useMemo( () => fakeData, []);
+
+  const [clients, setClients] = useState([]);
+
+  useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const clientsData = await fetchClients();
+                setClients(clientsData);
+            } catch (error) {
+                console.error('Error fetching clients:', error);
+            }
+        };
+
+        fetchData();
+  }, []);
+
+
+  //const data = useMemo( () => fakeData, []);
   const columns = useMemo(()=>[
     {
       Header: "ID",
@@ -31,19 +50,26 @@ const ManageClients = () => {
     {
       Header: "Akcje",
       Cell: ({ row }) => (
-        <button className='deleteButton' onClick={() => handleDelete(row.original.id)}>Usuń</button>
+        <button className="deleteButton" onClick={() => handleDelete(row.original.id)}>
+                    Usuń
+                </button>
       )
     },
   ], 
   []
   )
 
-  const handleDelete = (id) => {
-    // Implement your delete functionality here
-    console.log("Delete button clicked for ID:", id);
+  const handleDelete = async (userId) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/clients/${userId}`);
+      const clientsData = await fetchClients();
+      setClients(clientsData);
+      } catch (error) {
+          console.error('Error deleting client:', error);
+      }
   }
   
-  const {getTableProps, getTableBodyProps, headerGroups, rows, prepareRow} = useTable({columns, data})
+  const {getTableProps, getTableBodyProps, headerGroups, rows, prepareRow} = useTable({columns, data: clients,})
   
   return (
     <div>

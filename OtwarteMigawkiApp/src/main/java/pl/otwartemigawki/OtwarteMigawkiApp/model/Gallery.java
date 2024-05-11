@@ -17,18 +17,13 @@ public class Gallery {
     @Column(name = "id_gallery", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_session")
-    private UserSession idSession;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_gallery_type")
-    private GalleryType idGalleryType;
-
     @Column(name = "gallery_name", length = 100)
     private String galleryName;
 
     @OneToMany(mappedBy = "idGallery")
     private Set<GalleryPhoto> galleryPhotos = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "idGallery")
+    private Set<UserSession> userSessions = new LinkedHashSet<>();
 
 }

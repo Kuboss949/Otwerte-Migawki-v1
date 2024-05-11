@@ -1,28 +1,29 @@
 package pl.otwartemigawki.OtwarteMigawkiApp.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.Gallery;
 import pl.otwartemigawki.OtwarteMigawkiApp.repository.GalleryRepository;
 
 import java.util.List;
-
+@Service
 public class GalleryServiceImpl implements GalleryService {
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    @Autowired
-    private GalleryRepository galleryRepository;
+    private final GalleryRepository galleryRepository;
+
+    public GalleryServiceImpl(GalleryRepository galleryRepository) {
+        this.galleryRepository = galleryRepository;
+    }
+
+
+
     @Override
-    public List<Gallery> getAllGalleries() {
+    public List<Gallery> getAllUserGalleries(Integer userId) {
         return null;
     }
 
     @Override
-    public Gallery createGallery(Gallery Gallery) {
-        return null;
+    public void createGallery(Gallery Gallery) {
+        galleryRepository.save(Gallery);
     }
 
-    @Override
-    public void deleteGallery(Integer id) {
-
-    }
 }

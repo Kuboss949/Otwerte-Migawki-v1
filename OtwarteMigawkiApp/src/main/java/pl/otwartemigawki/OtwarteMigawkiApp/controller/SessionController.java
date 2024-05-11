@@ -6,34 +6,38 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.*;
-import pl.otwartemigawki.OtwarteMigawkiApp.service.AvailableDateService;
-import pl.otwartemigawki.OtwarteMigawkiApp.service.SessionService;
-import pl.otwartemigawki.OtwarteMigawkiApp.service.TimeService;
+import pl.otwartemigawki.OtwarteMigawkiApp.service.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.util.SessionTypeDatesMapper;
 import pl.otwartemigawki.OtwarteMigawkiApp.util.SessionUtil;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/session")
+@CrossOrigin(origins = "http://localhost:3000")
 public class SessionController {
     private final SessionService sessionService;
     private final TimeService timeService;
     private final AvailableDateService availableDateService;
+    private final UserService userService;
+    private final UserSessionService userSessionService;
+
+
     @Autowired
-    public SessionController(SessionService sessionService, TimeService timeService, AvailableDateService availableDateService) {
+    public SessionController(SessionService sessionService, TimeService timeService, AvailableDateService availableDateService, UserService userService, UserSessionService userSessionService) {
         this.sessionService = sessionService;
         this.timeService = timeService;
         this.availableDateService = availableDateService;
+        this.userService = userService;
+        this.userSessionService = userSessionService;
     }
 
     @GetMapping("/all")
+
     public ResponseEntity<List<SessionTypeDTO>> getAllSessionTypes(){
         List<SessionType> types = sessionService.getAllSessionTypes();
-        List<SessionTypeDTO> dtos = types.stream().map(SessionUtil::convertToDTO).toList();
+        List<SessionTypeDTO> dtos = types.stream().map(SessionUtil::mapToDTO).toList();
         return ResponseEntity.ok(dtos);
     }
 
@@ -92,5 +96,12 @@ public class SessionController {
         });
 
         return ResponseEntity.ok("Data saved successfully");
+    }
+
+    @GetMapping("/sessions/{userId}")
+    public ResponseEntity<List<UserSessionDTO>> getSessionsForUser(@PathVariable Long userId) {
+        User user = userService.getUserById(userId);
+        List<UserSessionDTO> galleries = userSessionService.getAllSessionsForUser(user).stream().map(SessionUtil::mapToDto).toList();
+        return ResponseEntity.ok(galleries);
     }
 }

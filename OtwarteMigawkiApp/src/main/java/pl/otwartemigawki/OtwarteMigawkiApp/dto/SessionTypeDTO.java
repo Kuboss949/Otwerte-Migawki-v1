@@ -13,4 +13,6 @@ public class SessionTypeDTO implements Serializable {
     String sessionTypeName;
     String description;
     Integer price;
+    String coverPhotoPath;
+
 }

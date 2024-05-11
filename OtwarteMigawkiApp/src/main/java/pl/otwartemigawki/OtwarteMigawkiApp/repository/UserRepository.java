@@ -6,13 +6,14 @@ import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserSessionDetailsDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT NEW pl.otwartemigawki.OtwarteMigawkiApp.dto.UserSessionDetailsDTO(" +
-            "u.userDetail.name, " +
-            "u.userDetail.surname, " +
-            "u.userDetail.phone, " +
+            "u.userDetailData.name, " +
+            "u.userDetailData.surname, " +
+            "u.userDetailData.phone, " +
             "u.email, " +
             "us.id, " +
             "st.sessionTypeName, " +
@@ -20,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "FROM UserSession us " +
             "JOIN us.idUser u " +
             "JOIN us.idSessionType st " +
-            "WHERE us.galleries IS EMPTY")
+            "WHERE us.idGallery IS NULL")
     List<UserSessionDetailsDTO> findSessionsWithoutGalleries();
+
+    Optional<User> findByEmail(String email);
 }

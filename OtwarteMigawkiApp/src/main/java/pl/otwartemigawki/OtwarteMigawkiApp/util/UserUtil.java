@@ -1,11 +1,12 @@
 package pl.otwartemigawki.OtwarteMigawkiApp.util;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserRequestDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserWithDetailsDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.Role;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.User;
-import pl.otwartemigawki.OtwarteMigawkiApp.model.UserDetail;
+import pl.otwartemigawki.OtwarteMigawkiApp.model.UserDetailData;
 import pl.otwartemigawki.OtwarteMigawkiApp.service.RoleService;
 
 import java.security.SecureRandom;
@@ -31,12 +32,12 @@ public class UserUtil {
         return user;
     }
 
-    public static UserDetail createUserDetailFromDTO(UserRequestDTO userRequestDTO){
-        UserDetail userDetail = new UserDetail();
-        userDetail.setName(userRequestDTO.getName());
-        userDetail.setSurname(userRequestDTO.getSurname());
-        userDetail.setPhone(userRequestDTO.getPhone());
-        return userDetail;
+    public static UserDetailData createUserDetailFromDTO(UserRequestDTO userRequestDTO){
+        UserDetailData userDetailData = new UserDetailData();
+        userDetailData.setName(userRequestDTO.getName());
+        userDetailData.setSurname(userRequestDTO.getSurname());
+        userDetailData.setPhone(userRequestDTO.getPhone());
+        return userDetailData;
     }
 
     public static UserWithDetailsDTO convertToDTO(User user, boolean withPassword) {
@@ -49,9 +50,9 @@ public class UserUtil {
         }
         dto.setIdRoleId(user.getIdRole() != null ? user.getIdRole().getId() : null);
         dto.setIsTmp(user.getIsTmp());
-        dto.setName(user.getUserDetail().getName());
-        dto.setSurname(user.getUserDetail().getSurname());
-        dto.setPhone(user.getUserDetail().getPhone());
+        dto.setName(user.getUserDetailData().getName());
+        dto.setSurname(user.getUserDetailData().getSurname());
+        dto.setPhone(user.getUserDetailData().getPhone());
         return dto;
     }
 
@@ -63,9 +64,9 @@ public class UserUtil {
             user.setSalt(salt);
         }
         user.setEmail(userRequest.getEmail());
-        user.getUserDetail().setName(userRequest.getName());
-        user.getUserDetail().setSurname(userRequest.getSurname());
-        user.getUserDetail().setPhone(userRequest.getPhone());
+        user.getUserDetailData().setName(userRequest.getName());
+        user.getUserDetailData().setSurname(userRequest.getSurname());
+        user.getUserDetailData().setPhone(userRequest.getPhone());
     }
 
     private static String generateSalt() {

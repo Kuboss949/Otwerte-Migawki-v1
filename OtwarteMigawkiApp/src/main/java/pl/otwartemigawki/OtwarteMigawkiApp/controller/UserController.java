@@ -15,14 +15,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/clients")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     private final UserService userService;
-    private final RoleService roleService;
 
     public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.roleService = roleService;
     }
 
     @GetMapping("/all")
@@ -41,22 +40,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/add")
-    public ResponseEntity<ApiResponseDTO> addUser(@RequestBody UserRequestDTO userRequestDTO) {
-        try {
-            User user = UserUtil.createUserFromDTO(userRequestDTO, roleService);
 
-            UserDetail userDetail = UserUtil.createUserDetailFromDTO(userRequestDTO);
-            userDetail.setIdUser(user);
-            userService.saveOrUpdateUser(user);
-            userService.saveOrUpdateUserDetail(userDetail);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDTO("User added successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponseDTO("Failed to add user: " + e.getMessage()));
-        }
-    }
 
 
 
@@ -99,13 +83,14 @@ public class UserController {
         User user = new User();
         user.setIsTmp(true);
 
-        UserDetail userDetail = new UserDetail();
-        userDetail.setIdUser(user);
-        userDetail.setName(request.getName());
-        userDetail.setSurname(request.getSurname());
+        UserDetailData userDetailData = new UserDetailData();
+        userDetailData.setIdUser(user);
+        userDetailData.setName(request.getName());
+        userDetailData.setSurname(request.getSurname());
+        userDetailData.setPhone(request.getPhone());
 
         userService.saveOrUpdateUser(user);
-        userService.saveOrUpdateUserDetail(userDetail);
+        userService.saveOrUpdateUserDetail(userDetailData);
 
         return user;
     }
