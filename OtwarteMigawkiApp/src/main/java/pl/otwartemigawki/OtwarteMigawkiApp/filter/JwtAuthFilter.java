@@ -14,6 +14,8 @@ import pl.otwartemigawki.OtwarteMigawkiApp.service.JwtService;
 import pl.otwartemigawki.OtwarteMigawkiApp.service.UserServiceImpl;
 
 import java.io.IOException;
+import jakarta.servlet.http.Cookie;
+
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -32,17 +34,33 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
-        if(authHeader == null || !authHeader.startsWith("Bearer ")){
-            filterChain.doFilter(request, response);
-            return;
+
+        // Check if token is present in Authorization header
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            authenticateWithToken(token, request);
+        } else {
+            // Token not present in Authorization header, check cookie
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("jwtToken")) {
+                        String token = cookie.getValue();
+                        authenticateWithToken(token, request);
+                        break;
+                    }
+                }
+            }
         }
 
-        String token = authHeader.substring(7);
-        String username = jwtService.extractUserName(token);
+        filterChain.doFilter(request, response);
+    }
 
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
+    private void authenticateWithToken(String token, HttpServletRequest request) {
+        String username = jwtService.extractUserName(token);
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if(jwtService.isValid(token, userDetails)){
+            if (jwtService.isValid(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
@@ -52,8 +70,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-        filterChain.doFilter(request, response);
     }
-
-
 }

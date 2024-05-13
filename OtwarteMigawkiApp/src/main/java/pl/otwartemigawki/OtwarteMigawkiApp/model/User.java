@@ -31,7 +31,7 @@ public class User implements UserDetails {
     @Column(name = "salt", length = 100)
     private String salt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_role")
     private Role idRole;
 
