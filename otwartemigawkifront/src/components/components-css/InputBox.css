@@ -8,6 +8,23 @@
     box-sizing:border-box
 }
 
+input.form-field:-webkit-autofill {
+  background-color: #EDE2DC !important;
+}
+.error-message{
+  color: red;
+  position: absolute;
+  right: -150px;
+  width: 150px;
+  z-index: 100;
+  background-color: #EDE2DC;
+  padding: 5px;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+
 .floating-label{
     position: relative;
     margin-top:20px;

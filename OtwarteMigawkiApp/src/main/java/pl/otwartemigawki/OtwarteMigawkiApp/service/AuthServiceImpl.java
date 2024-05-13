@@ -1,5 +1,7 @@
 package pl.otwartemigawki.OtwarteMigawkiApp.service;
 
+import exceptions.ApplicationException;
+import exceptions.RegistrationException;
 import exceptions.UserNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,17 +38,24 @@ public class AuthServiceImpl implements AuthService{
     }
 
     public AuthResponseDTO register(UserRequestDTO userRequestDTO){
-        User user = UserUtil.createUserFromDTO(userRequestDTO, roleService);
-        UserDetailData userDetailData = UserUtil.createUserDetailFromDTO(userRequestDTO);
+        try {
+            UserUtil.checkRegisterRequest(userRequestDTO, userRepository, userDetailRepository);
+            User user = UserUtil.createUserFromDTO(userRequestDTO, roleService);
+            UserDetailData userDetailData = UserUtil.createUserDetailFromDTO(userRequestDTO);
 
-        user = userRepository.save(user);
-        userDetailData.setIdUser(user);
-        userDetailRepository.save(userDetailData);
+            user = userRepository.save(user);
+            userDetailData.setIdUser(user);
+            userDetailRepository.save(userDetailData);
 
 
-        String token = jwtService.generateToken(user);
+            String token = jwtService.generateToken(user);
 
-        return new AuthResponseDTO(token);
+            return new AuthResponseDTO(token);
+        } catch(RegistrationException e){
+            throw e;
+        } catch(Exception e){
+            throw new ApplicationException("Internal server error");
+        }
     }
 
     public AuthResponseDTO authenticate(LoginRequestDTO request){

@@ -1,13 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './components-css/InputBox.css'
 
-const InputBox = ({ label, name, type="text", placeholder="" }) =>{
-    return(
-        <div className="floating-label">
-                <label className="form-label">{label}</label>
-                <input className="form-field" id={name} placeholder={placeholder} type={type} name={name}/>
-        </div>
-    );
+const InputBox = ({ label, name, type = "text", placeholder = "", value, onChange, validator, validationMsg }) => {
+  const [error, setError] = useState('');
+  const [focused, setFocused] = useState(false);
+
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    if (validator && !validator(inputValue)) {
+      setError(validationMsg);
+    } else {
+      setError('');
+    }
+    onChange(e);
+  };
+
+  const handleFocus = () => {
+    setFocused(true);
+  };
+
+  const handleBlur = () => {
+    setFocused(false);
+  };
+
+  return (
+    <div className={`floating-label ${error ? 'input-error' : ''}`}>
+      <label className="form-label">{label}</label>
+      <input
+        className={`form-field ${error ? 'input-error' : ''}`}
+        id={name}
+        placeholder={placeholder}
+        type={type}
+        name={name}
+        value={value}
+        onChange={handleInputChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        style={{ backgroundColor: error ? '#ffcccc' : 'inherit' }} // Change background color only when there's an error
+      />
+      {error && focused && <span className="error-message">{error}</span>}
+    </div>
+  );
 };
 
 const SelectBox = ({ label, name, options }) => {

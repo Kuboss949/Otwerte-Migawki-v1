@@ -25,4 +25,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<UserSessionDetailsDTO> findSessionsWithoutGalleries();
 
     Optional<User> findByEmail(String email);
+
 }

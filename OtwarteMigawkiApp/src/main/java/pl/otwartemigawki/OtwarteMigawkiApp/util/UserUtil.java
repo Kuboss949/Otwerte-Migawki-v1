@@ -1,17 +1,20 @@
 package pl.otwartemigawki.OtwarteMigawkiApp.util;
 
+import exceptions.RegistrationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserRequestDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserWithDetailsDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.Role;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.User;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.UserDetailData;
+import pl.otwartemigawki.OtwarteMigawkiApp.repository.UserDetailRepository;
+import pl.otwartemigawki.OtwarteMigawkiApp.repository.UserRepository;
 import pl.otwartemigawki.OtwarteMigawkiApp.service.RoleService;
 
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.Optional;
 
 
 public class UserUtil {
@@ -74,5 +77,34 @@ public class UserUtil {
         byte[] salt = new byte[16];
         random.nextBytes(salt);
         return Base64.getEncoder().encodeToString(salt);
+    }
+
+    public static void checkRegisterRequest(UserRequestDTO userRequestDTO, UserRepository userRepository, UserDetailRepository userDetailRepository) {
+        Optional<User> user =  userRepository.findByEmail(userRequestDTO.getEmail());
+        if(user.isPresent()){
+            throw new RegistrationException("Użytkownik z takim adresem email już istnieje!");
+        }
+
+        Optional <UserDetailData> userDetailData = userDetailRepository.findByPhone(userRequestDTO.getPhone());
+        if(userDetailData.isPresent()){
+            throw new RegistrationException("Użytkownik z takim numerem telefonu już istnieje!");
+        }
+        if(!Validator.isValidEmail(userRequestDTO.getEmail())){
+            throw new RegistrationException("Niepoprawny adres email!");
+        }
+
+        if(!Validator.isValidPhoneNumber(userRequestDTO.getPhone())){
+            throw new RegistrationException("Niepoprawny numer telefonu!");
+        }
+
+        if(!Validator.isValidString(userRequestDTO.getName()) || !Validator.isValidString(userRequestDTO.getSurname())){
+            throw new RegistrationException("Imię i nazwisko niepowinny być puste!");
+        }
+
+        if(!Validator.isValidPassword(userRequestDTO.getPassword())){
+            throw new RegistrationException("Hasło powinno skłądać się przynajmniej z 8 znaków, zawierać małe i duże litery oraz przynajmniej jedną cyfrę!");
+        }
+
+
     }
 }

@@ -1,5 +1,7 @@
 package pl.otwartemigawki.OtwarteMigawkiApp.controller;
 
+import exceptions.RegistrationException;
+import exceptions.UserNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -12,7 +14,7 @@ import pl.otwartemigawki.OtwarteMigawkiApp.service.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://localhost:3000")
 public class AuthController {
     private final AuthService authService;
 
@@ -21,28 +23,30 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody UserRequestDTO request){
-        return ResponseEntity.ok(authService.register(request));
+    public ResponseEntity<String> register(@RequestBody UserRequestDTO request){
+        try {
+            authService.register(request);
+            return ResponseEntity.ok("Rejestracja zakończona sukcesem!");
+        } catch(RegistrationException e){
+            return ResponseEntity.status(HttpStatus.OK).body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody LoginRequestDTO request, HttpServletResponse response){
+    public ResponseEntity<String> login(@RequestBody LoginRequestDTO request, HttpServletResponse response){
         try {
             AuthResponseDTO token = authService.authenticate(request);
-            if (token != null) {
-                Cookie cookie = new Cookie("jwtToken", token.getToken());
-                cookie.setMaxAge(86400);
-                cookie.setSecure(true);
-                cookie.setHttpOnly(true);
-                cookie.setPath("/");
-                response.addCookie(cookie);
-                return ResponseEntity.ok(token);
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
+            Cookie cookie = new Cookie("jwtToken", token.getToken());
+            cookie.setMaxAge(86400);
+            cookie.setSecure(true);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+            return ResponseEntity.ok("Logowanie zakończone sukcesem");
+        }catch (UserNotFoundException e) {
+            return ResponseEntity.ok("Niepoprawne dane logowania!");
         } catch (Exception e) {
-            System.out.println("Authentication failed: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.ok("Błąd serwera, prosimy spróbować ponownie za chwilę");
         }
     }
 
