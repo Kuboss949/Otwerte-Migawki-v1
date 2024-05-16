@@ -14,4 +14,5 @@ public interface UserService {
     void saveOrUpdateUser(User user);
     void saveOrUpdateUserDetail(UserDetailData userDetailData);
     void deleteUser(Long id);
+    User getUserByEmail(String extractUserName);
 }

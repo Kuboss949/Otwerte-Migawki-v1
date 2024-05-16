@@ -8,5 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApiResponseDTO {
+
     private String message;
+    private boolean success;
 }

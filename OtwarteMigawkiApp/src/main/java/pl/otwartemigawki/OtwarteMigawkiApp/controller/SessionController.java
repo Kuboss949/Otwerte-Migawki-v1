@@ -47,10 +47,10 @@ public class SessionController {
             SessionType type = SessionUtil.createSessionTypeFromDTO(sessionTypeDTO);
             sessionService.addSessionType(type);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDTO("Session added successfully"));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDTO("Session added successfully", true));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponseDTO("Failed to add session: " + e.getMessage()));
+                    .body(new ApiResponseDTO("Failed to add session: " + e.getMessage(), false));
         }
     }
 
@@ -58,10 +58,10 @@ public class SessionController {
     public ResponseEntity<ApiResponseDTO> deleteSessionType(@PathVariable Long sessionTypeId) {
         try{
             sessionService.deleteSessionType(sessionTypeId);
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDTO("Session deleted successfully"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDTO("Session deleted successfully", true));
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponseDTO("Failed to delete session: " + e.getMessage()));
+                    .body(new ApiResponseDTO("Failed to delete session: " + e.getMessage(), false));
         }
     }
 

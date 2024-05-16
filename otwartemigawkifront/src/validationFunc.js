@@ -25,3 +25,19 @@ export const isValidPassword = (password) => {
         /[a-z]/.test(password) &&
         /\d/.test(password);
 };
+
+export const updateDisableSubmit = (setDisableSubmit, formName) => {
+      const inputs = document.querySelectorAll(`#${formName} .form-field`);
+      let hasEmptyInput = false;
+      let hasErrorInput = false;
+  
+      inputs.forEach(input => {
+        if (!input.value.trim()) {
+          hasEmptyInput = true;
+        }
+        if (input.classList.contains('input-error')) {
+          hasErrorInput = true;
+        }
+      });
+      setDisableSubmit(hasEmptyInput || hasErrorInput);
+  };

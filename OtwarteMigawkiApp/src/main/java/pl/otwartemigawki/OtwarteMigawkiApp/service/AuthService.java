@@ -8,4 +8,8 @@ import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserRequestDTO;
 public interface AuthService {
     AuthResponseDTO register(UserRequestDTO userRequestDTO);
     AuthResponseDTO authenticate(LoginRequestDTO request);
+    boolean isTokenValid(String token);
+    boolean isAdminToken(String token);
+
+    String getRole(String cookieValue);
 }

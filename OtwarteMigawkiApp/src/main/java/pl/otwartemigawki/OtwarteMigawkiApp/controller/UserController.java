@@ -1,11 +1,16 @@
 package pl.otwartemigawki.OtwarteMigawkiApp.controller;
 
+import exceptions.RegistrationException;
 import exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.*;
+import pl.otwartemigawki.OtwarteMigawkiApp.repository.UserDetailRepository;
+import pl.otwartemigawki.OtwarteMigawkiApp.repository.UserRepository;
+import pl.otwartemigawki.OtwarteMigawkiApp.service.JwtService;
 import pl.otwartemigawki.OtwarteMigawkiApp.service.RoleService;
 import pl.otwartemigawki.OtwarteMigawkiApp.service.UserService;
 import pl.otwartemigawki.OtwarteMigawkiApp.util.UserUtil;
@@ -19,12 +24,21 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final UserDetailRepository userDetailRepository;
 
-    public UserController(UserService userService, RoleService roleService) {
+    public UserController(UserService userService, RoleService roleService, JwtService jwtService,
+                          UserRepository userRepository,
+                          UserDetailRepository userDetailRepository) {
         this.userService = userService;
+        this.jwtService = jwtService;
+        this.userRepository = userRepository;
+        this.userDetailRepository = userDetailRepository;
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAuthority('user')")
     public ResponseEntity<List<UserWithDetailsDTO>> getAllClients() {
         List<User> users = userService.getAllUsers(); // Assuming you have a service method to fetch all users
         List<UserWithDetailsDTO> dtos = users.stream()
@@ -41,28 +55,43 @@ public class UserController {
 
 
 
-
-
-
-    @GetMapping("/{userId}")
-    public UserWithDetailsDTO getClientById(@PathVariable Long userId) {
-        User user = userService.getUserById(userId);
+    @GetMapping("/get-user-info")
+    public ResponseEntity<UserWithDetailsDTO> getClient(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue) {
+        User user = userService.getUserByEmail(jwtService.extractUserName(cookieValue));
         if (user == null) {
-            throw new UserNotFoundException("User not found with ID: " + userId);
+            throw new UserNotFoundException("User not found");
         }
-        return UserUtil.convertToDTO(user, false);
+        return ResponseEntity.ok(UserUtil.convertToDTO(user, false));
     }
 
-    @PostMapping("/{userId}/update")
-    public ResponseEntity<ApiResponseDTO> updateUser(@PathVariable Long userId, @RequestBody UserRequestDTO userRequest) {
+    @PostMapping("/update-user-info")
+    public ResponseEntity<ApiResponseDTO> updateUser(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue,
+                                                     @RequestBody UserRequestDTO userRequest) {
         try {
-            User user = userService.getUserById(userId);
+            User user = userService.getUserByEmail(jwtService.extractUserName(cookieValue));
+            UserUtil.checkUpdateRequest(userRequest, userRepository, userDetailRepository);
             UserUtil.updateUserFromDTO(user, userRequest);
             userService.saveOrUpdateUser(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDTO("User updated successfully"));
-        }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponseDTO("Failed to update: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDTO("Twoje dane zostały poprawnie zaktualizowane", true));
+        }catch(RegistrationException e){
+            return ResponseEntity.ok(new ApiResponseDTO(e.getMessage(), false));
+        }catch (Exception e){
+            return ResponseEntity.ok(new ApiResponseDTO("Błąd serwera, prosimy spróbować później", false));
+        }
+    }
+    @PostMapping("/update-user-password")
+    public ResponseEntity<ApiResponseDTO> updateUserPassword(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue,
+                                                     @RequestBody PasswordChangeRequestDTO request) {
+        try {
+            User user = userService.getUserByEmail(jwtService.extractUserName(cookieValue));
+            UserUtil.checkPasswordRequest(request);
+            UserUtil.updateUserPasswordFromDTO(user, request);
+            userService.saveOrUpdateUser(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDTO("Hasło zostało zmienione!", true));
+        }catch(RegistrationException e){
+            return ResponseEntity.ok(new ApiResponseDTO(e.getMessage(), false));
+        }catch (Exception e){
+            return ResponseEntity.ok(new ApiResponseDTO("Błąd serwera, prosimy spróbować później", false));
         }
     }
 
@@ -70,10 +99,10 @@ public class UserController {
     public ResponseEntity<ApiResponseDTO> deleteUser(@PathVariable Long userId) {
         try{
             userService.deleteUser(userId);
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDTO("User deleted successfully"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDTO("User deleted successfully", true));
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponseDTO("Failed to delete user: " + e.getMessage()));
+                    .body(new ApiResponseDTO("Failed to delete user: " + e.getMessage(), false));
         }
     }
 

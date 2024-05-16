@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { InputBox } from '../components/InputBox.js';
-import { handleLogin } from '../api/LoginApi';
+import { handlePost } from '../api/PostApi.js';
 import "../css/Login.css";
 
 
@@ -8,13 +8,18 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [popupMessage, setPopupMessage] = useState('');
+  const [responseSuccess, setResponseSuccess] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleLogin(email, password, setPopupMessage, setShowPopup);
+    const requestBody = {
+      email: email,
+      password: password
+    };
+    await handlePost('auth/login', requestBody, setPopupMessage, setResponseSuccess, setShowPopup);
   };
 
   return (
@@ -27,7 +32,7 @@ const Login = () => {
         <button type="submit" className='site-button'>Zaloguj</button>
       </form>
       {showPopup && (
-        <div className="popup">
+        <div className={`popup ${responseSuccess ? 'success' : 'failed'}`}>
           {/* Display popup message */}
           <p>{popupMessage}</p>
           <button className='site-button' onClick={() => setShowPopup(false)}>Zamknij</button>

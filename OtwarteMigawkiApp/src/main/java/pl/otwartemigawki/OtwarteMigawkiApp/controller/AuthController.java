@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.otwartemigawki.OtwarteMigawkiApp.dto.ApiResponseDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.AuthResponseDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.LoginRequestDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserRequestDTO;
@@ -23,17 +24,17 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserRequestDTO request){
+    public ResponseEntity<ApiResponseDTO> register(@RequestBody UserRequestDTO request){
         try {
             authService.register(request);
-            return ResponseEntity.ok("Rejestracja zakończona sukcesem!");
+            return ResponseEntity.ok(new ApiResponseDTO("Rejestracja zakończona sukcesem!", true));
         } catch(RegistrationException e){
-            return ResponseEntity.status(HttpStatus.OK).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDTO(e.getMessage(), false));
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDTO request, HttpServletResponse response){
+    public ResponseEntity<ApiResponseDTO> login(@RequestBody LoginRequestDTO request, HttpServletResponse response){
         try {
             AuthResponseDTO token = authService.authenticate(request);
             Cookie cookie = new Cookie("jwtToken", token.getToken());
@@ -42,12 +43,26 @@ public class AuthController {
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             response.addCookie(cookie);
-            return ResponseEntity.ok("Logowanie zakończone sukcesem");
+            return ResponseEntity.ok(new ApiResponseDTO("Logowanie zakończone sukcesem", true));
         }catch (UserNotFoundException e) {
-            return ResponseEntity.ok("Niepoprawne dane logowania!");
+            return ResponseEntity.ok(new ApiResponseDTO("Niepoprawne dane logowania!", false));
         } catch (Exception e) {
-            return ResponseEntity.ok("Błąd serwera, prosimy spróbować ponownie za chwilę");
+            return ResponseEntity.ok(new ApiResponseDTO("Błąd serwera, prosimy spróbować ponownie za chwilę", false));
         }
     }
 
+    @GetMapping("/is-authenticated")
+    public ResponseEntity<Boolean> isAuthenticated(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue){
+        Boolean isAuthenticated = authService.isTokenValid(cookieValue);
+        return ResponseEntity.ok(isAuthenticated);
+    }
+
+    @GetMapping("/is-admin")
+    public ResponseEntity<Boolean> isAdmin(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue){
+        return ResponseEntity.ok(authService.isAdminToken(cookieValue));
+    }
+    @GetMapping("/get-role")
+    public ResponseEntity<String> getUserRole(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue){
+        return ResponseEntity.ok(authService.getRole(cookieValue));
+    }
 }

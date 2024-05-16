@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './components-css/InputBox.css'
 
-const InputBox = ({ label, name, type = "text", placeholder = "", value, onChange, validator, validationMsg }) => {
+const InputBox = ({ label, name, type = "text", placeholder = "", onChange = () => {}, validator, validationMsg }) => {
   const [error, setError] = useState('');
   const [focused, setFocused] = useState(false);
 
@@ -32,7 +32,6 @@ const InputBox = ({ label, name, type = "text", placeholder = "", value, onChang
         placeholder={placeholder}
         type={type}
         name={name}
-        value={value}
         onChange={handleInputChange}
         onFocus={handleFocus}
         onBlur={handleBlur}

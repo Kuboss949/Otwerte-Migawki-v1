@@ -17,6 +17,7 @@ import pl.otwartemigawki.OtwarteMigawkiApp.repository.UserDetailRepository;
 import pl.otwartemigawki.OtwarteMigawkiApp.repository.UserRepository;
 import pl.otwartemigawki.OtwarteMigawkiApp.util.UserUtil;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -76,6 +77,35 @@ public class AuthServiceImpl implements AuthService{
             }
         }
         throw new UserNotFoundException("Niepoprawne dane uwierzytelniające");
+    }
+
+    @Override
+    public boolean isTokenValid(String token) {
+        return Optional.ofNullable(jwtService.extractUserName(token))
+                .flatMap(userRepository::findByEmail)
+                .map(user -> jwtService.isValid(token, user))
+                .orElse(false);
+    }
+
+    @Override
+    public boolean isAdminToken(String token) {
+        return Objects.equals(this.getRole(token), "admin");
+    }
+
+    @Override
+    public String getRole(String token) {
+        try {
+            String username = jwtService.extractUserName(token);
+            if (username != null) {
+                User user = userRepository.findByEmail(username).orElse(null);
+                if (user != null) {
+                    return user.getIdRole().getRoleName();
+                }
+            }
+            return "visitor";
+        } catch (Exception e) {
+            return "visitor";
+        }
     }
 
 

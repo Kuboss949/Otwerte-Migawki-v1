@@ -1,7 +1,9 @@
 package pl.otwartemigawki.OtwarteMigawkiApp.util;
 
+import exceptions.ApplicationException;
 import exceptions.RegistrationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import pl.otwartemigawki.OtwarteMigawkiApp.dto.PasswordChangeRequestDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserRequestDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserWithDetailsDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.Role;
@@ -60,16 +62,27 @@ public class UserUtil {
     }
 
     public static void updateUserFromDTO(User user, UserRequestDTO userRequest){
-        if(!Objects.equals(userRequest.getPassword(), "")){
-            String salt = generateSalt();
-            String hashedPassword = passwordEncoder.encode(userRequest.getPassword() + salt);
-            user.setPassword(hashedPassword);
-            user.setSalt(salt);
-        }
         user.setEmail(userRequest.getEmail());
         user.getUserDetailData().setName(userRequest.getName());
         user.getUserDetailData().setSurname(userRequest.getSurname());
         user.getUserDetailData().setPhone(userRequest.getPhone());
+    }
+
+    public static void updateUserPasswordFromDTO(User user, PasswordChangeRequestDTO passwordChangeRequestDTO){
+        if(checkPassword(user, passwordChangeRequestDTO.getOldPassword())){
+            String salt = generateSalt();
+            String hashedPassword = passwordEncoder.encode(passwordChangeRequestDTO.getNewPassword() + salt);
+            user.setPassword(hashedPassword);
+            user.setSalt(salt);
+            return;
+        }
+        throw new ApplicationException("Podano nieprawidłowe hasło");
+    }
+
+    private static boolean checkPassword(User user, String password){
+        String providedHashed = passwordEncoder.encode(password + user.getSalt());
+        String oldHashed = passwordEncoder.encode(user.getPassword() + user.getSalt());
+        return oldHashed.equals(providedHashed);
     }
 
     private static String generateSalt() {
@@ -79,7 +92,7 @@ public class UserUtil {
         return Base64.getEncoder().encodeToString(salt);
     }
 
-    public static void checkRegisterRequest(UserRequestDTO userRequestDTO, UserRepository userRepository, UserDetailRepository userDetailRepository) {
+    public static void checkUpdateRequest(UserRequestDTO userRequestDTO, UserRepository userRepository, UserDetailRepository userDetailRepository){
         Optional<User> user =  userRepository.findByEmail(userRequestDTO.getEmail());
         if(user.isPresent()){
             throw new RegistrationException("Użytkownik z takim adresem email już istnieje!");
@@ -100,11 +113,20 @@ public class UserUtil {
         if(!Validator.isValidString(userRequestDTO.getName()) || !Validator.isValidString(userRequestDTO.getSurname())){
             throw new RegistrationException("Imię i nazwisko niepowinny być puste!");
         }
+    }
+
+    public static void checkRegisterRequest(UserRequestDTO userRequestDTO, UserRepository userRepository, UserDetailRepository userDetailRepository) {
+        checkUpdateRequest(userRequestDTO, userRepository, userDetailRepository);
 
         if(!Validator.isValidPassword(userRequestDTO.getPassword())){
             throw new RegistrationException("Hasło powinno skłądać się przynajmniej z 8 znaków, zawierać małe i duże litery oraz przynajmniej jedną cyfrę!");
         }
 
+    }
 
+    public static void checkPasswordRequest(PasswordChangeRequestDTO request) {
+        if(!Validator.isValidPassword(request.getNewPassword())){
+            throw new RegistrationException("Hasło powinno skłądać się przynajmniej z 8 znaków, zawierać małe i duże litery oraz przynajmniej jedną cyfrę!");
+        }
     }
 }
