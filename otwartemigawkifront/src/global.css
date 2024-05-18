@@ -14,7 +14,12 @@ body {
     font-weight: bold;
     font-size: 1.2em;
     border-radius: 30px;
-
+    cursor: pointer;
+}
+.site-button:disabled {
+    border-color: #868484;
+    color: #868484;
+    cursor: not-allowed;
 }
 
 .site-header{
