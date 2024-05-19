@@ -65,4 +65,5 @@ public class AuthController {
     public ResponseEntity<String> getUserRole(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue){
         return ResponseEntity.ok(authService.getRole(cookieValue));
     }
+
 }

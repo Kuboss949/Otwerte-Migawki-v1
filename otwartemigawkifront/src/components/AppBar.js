@@ -1,30 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import './components-css/AppBar.css'
+import React, { useState, useEffect, useCallback } from 'react';
+import './components-css/AppBar.css';
 import { fetchUserRole } from '../api/AuthenticationApi';
 
-const Link = ({ text, destination }) =>{
-    return(
+const Link = ({ text, destination }) => {
+    return (
         <span>
             <a href={destination} className="link header-link">{text}</a>
         </span>
     );
-
 };
 
-const AppBar =() => {
+const AppBar = () => {
     const [role, setRole] = useState('visitor');
 
-    useEffect(() => {
-        const fetchRole = async () => {
-            try {
-                const role = await fetchUserRole();
-                setRole(role);
-            } catch (error) {
-                console.error('Error fetching authentication status:', error);
-            }
-        };
-        fetchRole();
+    const fetchAndSetRole = useCallback(async () => {
+        try {
+            const fetchedRole = await fetchUserRole();
+            setRole(fetchedRole);
+            localStorage.setItem('userType', fetchedRole);
+        } catch (error) {
+            setRole('visitor');
+            console.error('Error fetching authentication status:', error);
+        }
     }, []);
+
+    useEffect(() => {
+        const storedUserType = localStorage.getItem('userType');
+        if (storedUserType) {
+            setRole(storedUserType);
+        } else {
+            fetchAndSetRole();
+        }
+    }, [fetchAndSetRole]);
 
     let links = [];
     if (role === "visitor") {
@@ -50,21 +57,18 @@ const AppBar =() => {
         ];
     }
 
-    
-
-
     const firstHalf = links.slice(0, 2);
     const secondHalf = links.slice(2);
 
     return (
         <div id="menu">
-                {firstHalf.map((link, index) => (
-                    <Link key={index} text={link.text} destination={link.destination} />
-                ))}
-                <img src="/images/logo.png" alt="Logo" />
-                {secondHalf.map((link, index) => (
-                    <Link key={index} text={link.text} destination={link.destination} />
-                ))}
+            {firstHalf.map((link, index) => (
+                <Link key={index} text={link.text} destination={link.destination} />
+            ))}
+            <img src="/images/logo.png" alt="Logo" />
+            {secondHalf.map((link, index) => (
+                <Link key={index} text={link.text} destination={link.destination} />
+            ))}
         </div>
     );
 };

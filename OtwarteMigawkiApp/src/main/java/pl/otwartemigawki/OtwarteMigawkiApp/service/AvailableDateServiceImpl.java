@@ -31,15 +31,15 @@ public class AvailableDateServiceImpl implements AvailableDateService {
     }
 
     @Override
-    public AvailableDate getOrCreateAvailableDate(SessionType sessionType, AvailableDateDTO availableDateDTO) {
+    public AvailableDate createAvailableDate(SessionType sessionType, AvailableDateDTO availableDateDTO) {
         LocalDate date = availableDateDTO.getDate();
         AvailableDate availableDate = availableDateRepository.findByDateAndIdSessionType(date, sessionType);
-        if (availableDate == null) {
-            availableDate = new AvailableDate();
-            availableDate.setDate(date);
-            availableDate.setIdSessionType(sessionType);
-            availableDate = availableDateRepository.save(availableDate);
+        if (availableDate != null) {
+            availableDateRepository.delete(availableDate);
         }
-        return availableDate;
+        AvailableDate newAvailableDate = new AvailableDate();
+        newAvailableDate.setDate(date);
+        newAvailableDate.setIdSessionType(sessionType);
+        return availableDateRepository.save(newAvailableDate);
     }
 }

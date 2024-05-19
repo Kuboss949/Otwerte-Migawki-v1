@@ -20,18 +20,25 @@ const Account = () => {
   const [responseSuccess, setResponseSuccess] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState(true);
   const [disablePasswordSubmit, setDisablePasswordSubmit] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await fetchUserInfo();
         setUserData(data);
+        setEmail(data.email);
+        setName(data.name);
+        setSurname(data.surname);
+        setPhone(data.phone);
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching info:', error);
       }
     };
     fetchData();
   }, []);
+
 
   useEffect(() => {
     updateDisableSubmit(setDisableSubmit, 'detail-form');
@@ -43,6 +50,7 @@ const Account = () => {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     const requestBody = {
+      id: userData.id,
       email: email,
       password: '',
       name: name,
@@ -62,6 +70,22 @@ const Account = () => {
     await handlePost('clients/update-user-password', requestBody, setPopupMessage, setResponseSuccess, setShowPopup);
   };
 
+  const logout = () => {
+    const jwtTokenName = 'jwtToken';
+    const cookieExpirationDate = 'Thu, 01 Jan 1970 00:00:00 UTC';
+    const cookiePath = '/';
+    localStorage.clear();
+
+    document.cookie = `${jwtTokenName}=; expires=${cookieExpirationDate}; path=${cookiePath}`;
+
+    console.log("Logged out successfully");
+    window.location.href = '/login';
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
       <AppBar />
@@ -79,7 +103,9 @@ const Account = () => {
           <InputBox label='Stare hasło' name='old-password' type='password' onChange={(e) => setOldPassword(e.target.value)} validator={isValidPassword} validationMsg="Hasło powinno składać się z co najmniej 8 znaków, zawierać małe i duże litery oraz cyfry" />
           <InputBox label='Nowe hasło' name='new-password' type='password' onChange={(e) => setNewPassword(e.target.value)} validator={isValidPassword} validationMsg="Hasło powinno składać się z co najmniej 8 znaków, zawierać małe i duże litery oraz cyfry" />
           <button type='submit' className='site-button' disabled={disablePasswordSubmit}>Zmień hasło</button>
+          <button className='site-button' onClick={logout}>Wyloguj</button>
         </form>
+        
       </div>
       {showPopup && (
         <div className={`popup ${responseSuccess ? 'success' : 'failed'}`}>

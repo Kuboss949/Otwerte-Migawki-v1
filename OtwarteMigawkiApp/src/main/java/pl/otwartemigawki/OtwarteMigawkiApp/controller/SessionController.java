@@ -80,22 +80,22 @@ public class SessionController {
 
 
     @PostMapping("/addTimes")
-    public ResponseEntity<String> saveSessionTypesWithDates(@RequestBody SessionTypeDatesDTO sessionTypeDatesDTO) {
+    public ResponseEntity<ApiResponseDTO> saveSessionTypesWithDates(@RequestBody SessionTypeDatesDTO sessionTypeDatesDTO) {
         String sessionTypeName = sessionTypeDatesDTO.getSessionTypeName();
         List<AvailableDateDTO> availableDates = sessionTypeDatesDTO.getAvailableDates();
 
         SessionType sessionType = sessionService.getSessionTypeByName(sessionTypeName);
         if (sessionType == null) {
-            return ResponseEntity.badRequest().body("Session type not found");
+            return ResponseEntity.badRequest().body(new ApiResponseDTO("Nie znaleziono typu sesji", false));
         }
 
         availableDates.forEach(availableDateDTO -> {
-            AvailableDate availableDate = availableDateService.getOrCreateAvailableDate(sessionType, availableDateDTO);
             List<String> times = availableDateDTO.getTimes();
+            AvailableDate availableDate = availableDateService.createAvailableDate(sessionType, availableDateDTO);
             times.forEach(time -> timeService.saveTimeIfNotExists(availableDate, Integer.parseInt(time)));
         });
 
-        return ResponseEntity.ok("Data saved successfully");
+        return ResponseEntity.ok(new ApiResponseDTO("Data saved successfully", true));
     }
 
     @GetMapping("/sessions/{userId}")

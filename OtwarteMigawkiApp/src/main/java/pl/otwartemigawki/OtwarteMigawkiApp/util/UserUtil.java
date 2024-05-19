@@ -69,6 +69,7 @@ public class UserUtil {
     }
 
     public static void updateUserPasswordFromDTO(User user, PasswordChangeRequestDTO passwordChangeRequestDTO){
+        checkPasswordRequest(passwordChangeRequestDTO);
         if(checkPassword(user, passwordChangeRequestDTO.getOldPassword())){
             String salt = generateSalt();
             String hashedPassword = passwordEncoder.encode(passwordChangeRequestDTO.getNewPassword() + salt);
@@ -76,7 +77,7 @@ public class UserUtil {
             user.setSalt(salt);
             return;
         }
-        throw new ApplicationException("Podano nieprawidłowe hasło");
+        throw new RegistrationException("Podano nieprawidłowe hasło");
     }
 
     private static boolean checkPassword(User user, String password){
@@ -92,36 +93,40 @@ public class UserUtil {
         return Base64.getEncoder().encodeToString(salt);
     }
 
-    public static void checkUpdateRequest(UserRequestDTO userRequestDTO, UserRepository userRepository, UserDetailRepository userDetailRepository){
-        Optional<User> user =  userRepository.findByEmail(userRequestDTO.getEmail());
-        if(user.isPresent()){
+    public static void validateUserRequest(UserRequestDTO userRequestDTO, UserRepository userRepository, UserDetailRepository userDetailRepository, boolean isUpdate) {
+        Optional<User> user = userRepository.findByEmail(userRequestDTO.getEmail());
+        if (user.isPresent() && (!isUpdate || !user.get().getId().equals(userRequestDTO.getId()))) {
             throw new RegistrationException("Użytkownik z takim adresem email już istnieje!");
         }
 
-        Optional <UserDetailData> userDetailData = userDetailRepository.findByPhone(userRequestDTO.getPhone());
-        if(userDetailData.isPresent()){
+        Optional<UserDetailData> userDetailData = userDetailRepository.findByPhone(userRequestDTO.getPhone());
+        if (userDetailData.isPresent() && (!isUpdate || !userDetailData.get().getIdUser().getId().equals(userRequestDTO.getId()))) {
             throw new RegistrationException("Użytkownik z takim numerem telefonu już istnieje!");
         }
-        if(!Validator.isValidEmail(userRequestDTO.getEmail())){
+
+        if (!Validator.isValidEmail(userRequestDTO.getEmail())) {
             throw new RegistrationException("Niepoprawny adres email!");
         }
 
-        if(!Validator.isValidPhoneNumber(userRequestDTO.getPhone())){
+        if (!Validator.isValidPhoneNumber(userRequestDTO.getPhone())) {
             throw new RegistrationException("Niepoprawny numer telefonu!");
         }
 
-        if(!Validator.isValidString(userRequestDTO.getName()) || !Validator.isValidString(userRequestDTO.getSurname())){
-            throw new RegistrationException("Imię i nazwisko niepowinny być puste!");
+        if (!Validator.isValidString(userRequestDTO.getName()) || !Validator.isValidString(userRequestDTO.getSurname())) {
+            throw new RegistrationException("Imię i nazwisko nie powinny być puste!");
+        }
+
+        if (!isUpdate && !Validator.isValidPassword(userRequestDTO.getPassword())) {
+            throw new RegistrationException("Hasło powinno składać się przynajmniej z 8 znaków, zawierać małe i duże litery oraz przynajmniej jedną cyfrę!");
         }
     }
 
+    public static void checkUpdateRequest(UserRequestDTO userRequestDTO, UserRepository userRepository, UserDetailRepository userDetailRepository) {
+        validateUserRequest(userRequestDTO, userRepository, userDetailRepository, true);
+    }
+
     public static void checkRegisterRequest(UserRequestDTO userRequestDTO, UserRepository userRepository, UserDetailRepository userDetailRepository) {
-        checkUpdateRequest(userRequestDTO, userRepository, userDetailRepository);
-
-        if(!Validator.isValidPassword(userRequestDTO.getPassword())){
-            throw new RegistrationException("Hasło powinno skłądać się przynajmniej z 8 znaków, zawierać małe i duże litery oraz przynajmniej jedną cyfrę!");
-        }
-
+        validateUserRequest(userRequestDTO, userRepository, userDetailRepository, false);
     }
 
     public static void checkPasswordRequest(PasswordChangeRequestDTO request) {

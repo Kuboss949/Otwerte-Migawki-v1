@@ -81,10 +81,9 @@ public class UserController {
     }
     @PostMapping("/update-user-password")
     public ResponseEntity<ApiResponseDTO> updateUserPassword(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue,
-                                                     @RequestBody PasswordChangeRequestDTO request) {
+                                                             @RequestBody PasswordChangeRequestDTO request) {
         try {
             User user = userService.getUserByEmail(jwtService.extractUserName(cookieValue));
-            UserUtil.checkPasswordRequest(request);
             UserUtil.updateUserPasswordFromDTO(user, request);
             userService.saveOrUpdateUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDTO("Hasło zostało zmienione!", true));

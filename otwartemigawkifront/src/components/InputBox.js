@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import './components-css/InputBox.css'
+import './components-css/InputBox.css';
+
 
 const InputBox = ({ label, name, type = "text", placeholder = "", onChange = () => {}, validator, validationMsg }) => {
+  const [value, setValue] = useState(placeholder);
   const [error, setError] = useState('');
   const [focused, setFocused] = useState(false);
 
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
+    setValue(inputValue);
     if (validator && !validator(inputValue)) {
       setError(validationMsg);
     } else {
@@ -25,13 +28,14 @@ const InputBox = ({ label, name, type = "text", placeholder = "", onChange = () 
 
   return (
     <div className={`floating-label ${error ? 'input-error' : ''}`}>
-      <label className="form-label">{label}</label>
+      <label className="form-label" htmlFor={name}>{label}</label>
       <input
         className={`form-field ${error ? 'input-error' : ''}`}
         id={name}
         placeholder={placeholder}
         type={type}
         name={name}
+        value={value}
         onChange={handleInputChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -42,19 +46,22 @@ const InputBox = ({ label, name, type = "text", placeholder = "", onChange = () 
   );
 };
 
-const SelectBox = ({ label, name, options }) => {
-    return (
-        <div className="floating-label">
-            <label className="form-label">{label}</label>
-            <select className="form-field" name={name}>
-                {options.map((option, index) => (
-                    <option key={index} value={option}>
-                        {option}
-                    </option>
-                ))}
-            </select>
-        </div>
-    );
+
+
+const SelectBox = ({ label, name, options, onChange = () => {} }) => {
+  return (
+      <div className="floating-label">
+          <label className="form-label">{label}</label>
+          <select className="form-field" name={name} onChange={onChange}>
+              <option value="notValue">Wybierz sesje</option>
+              {options.map((option, index) => (
+                  <option key={index} value={option}>
+                      {option}
+                  </option>
+              ))}
+          </select>
+      </div>
+  );
 };
 
 
