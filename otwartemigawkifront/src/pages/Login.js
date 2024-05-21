@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { InputBox } from '../components/InputBox.js';
-import { handlePost } from '../api/PostApi.js';
+import Popup from '../components/Popup.js';
 import "../css/Login.css";
+import usePost from '../hooks/usePost.js';
 
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [popupMessage, setPopupMessage] = useState('');
-  const [responseSuccess, setResponseSuccess] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-
+  const { popupMessage, responseSuccess, showPopup, handlePost, closePopup } = usePost();
 
 
   const handleSubmit = async (e) => {
@@ -19,8 +17,16 @@ const Login = () => {
       email: email,
       password: password
     };
-    await handlePost('auth/login', requestBody, setPopupMessage, setResponseSuccess, setShowPopup);
+    await handlePost('auth/login', requestBody);
+    localStorage.clear();
+    localStorage.setItem("loggedIn", true);
   };
+
+  if(responseSuccess){
+    setTimeout(function() {
+      window.location.href = '/';
+    }, 3000);
+  }
 
   return (
     <div className='login-page flex-centered'>
@@ -31,13 +37,12 @@ const Login = () => {
         <a href="/rejestracja" className='login-page-link'>Nie masz konta?</a>
         <button type="submit" className='site-button'>Zaloguj</button>
       </form>
-      {showPopup && (
-        <div className={`popup ${responseSuccess ? 'success' : 'failed'}`}>
-          {/* Display popup message */}
-          <p>{popupMessage}</p>
-          <button className='site-button' onClick={() => setShowPopup(false)}>Zamknij</button>
-        </div>
-      )}
+      <Popup
+        showPopup={showPopup}
+        popupMessage={popupMessage}
+        responseSuccess={responseSuccess}
+        onClose={closePopup}
+      />
     </div>
   );
 }

@@ -37,6 +37,12 @@ const Register = () => {
     return value === password;
   };
 
+  if(responseSuccess){
+    setTimeout(function() {
+      window.location.href = '/login';
+    }, 3000);
+  }
+
   return (
     <div className='login-page flex-centered'>
       <img src='images/logo.png' alt='logo'/>

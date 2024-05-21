@@ -1,7 +1,6 @@
 import {React, useState, useMemo, useEffect} from 'react';
 import axios from 'axios';
 import AppBar from '../components/AppBar.js';
-import fakeData from "./clients.json";
 import "../css/ManageClients.css";
 import {useTable} from 'react-table'
 import { fetchClients } from '../api/ManageClientsApi.js';
@@ -61,7 +60,7 @@ const ManageClients = () => {
 
   const handleDelete = async (userId) => {
     try {
-      await axios.delete(`http://localhost:8080/api/clients/${userId}`);
+      await axios.delete(`/api/clients/${userId}`);
       const clientsData = await fetchClients();
       setClients(clientsData);
       } catch (error) {

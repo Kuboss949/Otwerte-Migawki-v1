@@ -8,6 +8,8 @@ export const handlePost = async (endpoint, requestBody, setPopupMessage, setResp
     setResponseSuccess(message.success)
     setShowPopup(true);
   } catch (error) {
-    console.error('Error occurred:', error);
+    setPopupMessage("Wystąpił problem: " + error);
+    setResponseSuccess(false)
+    setShowPopup(true);
   }
 };

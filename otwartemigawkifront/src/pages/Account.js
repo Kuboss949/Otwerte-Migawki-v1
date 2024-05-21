@@ -70,16 +70,13 @@ const Account = () => {
     await handlePost('clients/update-user-password', requestBody, setPopupMessage, setResponseSuccess, setShowPopup);
   };
 
-  const logout = () => {
-    const jwtTokenName = 'jwtToken';
-    const cookieExpirationDate = 'Thu, 01 Jan 1970 00:00:00 UTC';
-    const cookiePath = '/';
+  const logout = async (e) => {
+    await handlePost('auth/logout', {}, setPopupMessage, setResponseSuccess, setShowPopup)
     localStorage.clear();
-
-    document.cookie = `${jwtTokenName}=; expires=${cookieExpirationDate}; path=${cookiePath}`;
-
-    console.log("Logged out successfully");
-    window.location.href = '/login';
+    localStorage.setItem("loggedIn", false);
+    setTimeout(function() {
+       window.location.href = '/login';
+    }, 3000);
   };
 
   if (isLoading) {
@@ -103,7 +100,7 @@ const Account = () => {
           <InputBox label='Stare hasło' name='old-password' type='password' onChange={(e) => setOldPassword(e.target.value)} validator={isValidPassword} validationMsg="Hasło powinno składać się z co najmniej 8 znaków, zawierać małe i duże litery oraz cyfry" />
           <InputBox label='Nowe hasło' name='new-password' type='password' onChange={(e) => setNewPassword(e.target.value)} validator={isValidPassword} validationMsg="Hasło powinno składać się z co najmniej 8 znaków, zawierać małe i duże litery oraz cyfry" />
           <button type='submit' className='site-button' disabled={disablePasswordSubmit}>Zmień hasło</button>
-          <button className='site-button' onClick={logout}>Wyloguj</button>
+          <button type='button' className='site-button' onClick={logout}>Wyloguj</button>
         </form>
         
       </div>

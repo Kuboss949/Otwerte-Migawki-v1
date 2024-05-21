@@ -67,17 +67,17 @@ const SelectBox = ({ label, name, options, onChange = () => {} }) => {
 
 const Checkbox = ({ label, name, onChange }) => { // Added onChange prop
     return (
-      <div class="checkbox-wrapper-46">
+      <div className="checkbox-wrapper-46">
         <input
-          class="inp-cbx"
+          className="inp-cbx"
           id={name} 
           type="checkbox"
           name={name}
           onChange={onChange} // Added onChange event handler
         />
-        <label class="cbx" for={name}>
+        <label className="cbx" htmlFor={name}>
           <span>
-            <svg width="12px" height="10px" viewbox="0 0 12 10">
+            <svg width="12px" height="10px" viewBox="0 0 12 10">
               <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
             </svg>
           </span>

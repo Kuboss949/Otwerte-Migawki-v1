@@ -45,4 +45,9 @@ public class TimeServiceImpl implements TimeService {
             timeRepository.save(timeEntity);
         }
     }
+
+    @Override
+    public void deleteTime(Time time) {
+        timeRepository.delete(time);
+    }
 }

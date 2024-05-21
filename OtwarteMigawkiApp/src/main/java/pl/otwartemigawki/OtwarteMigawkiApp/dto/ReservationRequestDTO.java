@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class ReservationRequestDTO {
-    private Long id;
+    private String isRegistered;
     private LocalDate date;
     private Integer hour;
     private String sessionTypeName;
@@ -18,8 +18,5 @@ public class ReservationRequestDTO {
 
     public TemporaryUserRequestDTO getTemporaryUserInfo(){
         return new TemporaryUserRequestDTO(this.name, this.surname, this.phone);
-    }
-    public boolean isRegistered(){
-        return id > 0;
     }
 }

@@ -49,3 +49,8 @@
     margin-top:15px;
 }
 
+.highlighted-date {
+    background-color: #49473f; /* Example background color */
+    color: white; /* Example text color */
+    font-weight: 600;
+  }

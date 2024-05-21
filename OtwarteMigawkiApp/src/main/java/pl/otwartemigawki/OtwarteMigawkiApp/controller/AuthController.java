@@ -66,4 +66,17 @@ public class AuthController {
         return ResponseEntity.ok(authService.getRole(cookieValue));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponseDTO> logoutUser(HttpServletResponse response){
+        try{
+            Cookie cookie = new Cookie("jwtToken", null);
+            cookie.setMaxAge(0);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+            return ResponseEntity.ok( new ApiResponseDTO("Wylogowano pomyślnie", true));
+        } catch (Exception e){
+            return ResponseEntity.ok( new ApiResponseDTO("Coś poszło nie tak", false));
+        }
+    }
+
 }

@@ -38,7 +38,7 @@ const AddDates = () => {
       e.preventDefault();
       const requestBody = {
         sessionTypeName: lastSelectedSession,
-        availableDates: datesTimes
+        availableDates: datesTimes.filter(item => item.times.length > 0)
       };
       await handlePost('/session/addTimes', requestBody, setPopupMessage, setResponseSuccess, setShowPopup);
     }
@@ -46,9 +46,8 @@ const AddDates = () => {
 
   const handleSessionChange = (event) => {
     if (lastSelectedSession !== '') {
-      console.log("xD")
       const lastSessionData = availableDates.find(session => session.sessionTypeName === lastSelectedSession);
-      lastSessionData.availableDates = datesTimes;
+      lastSessionData.availableDates = datesTimes.filter(item => item.times.length > 0);
     }
     const selectedSessionType = event.target.value;
     const sessionData = availableDates.find(session => session.sessionTypeName === selectedSessionType);
@@ -67,8 +66,6 @@ const AddDates = () => {
   };
 
   const handleDateChange = (date) => {
-    console.log(availableDates);
-    console.log(datesTimes);
     setSelectedDate(date);
   };
 

@@ -11,4 +11,6 @@ public interface SessionService {
     void deleteSessionType(Long sessionTypeId);
 
     SessionType getSessionTypeByName(String sessionTypeName);
+
+    List<UserSession> getAllUpcomingSessions();
 }

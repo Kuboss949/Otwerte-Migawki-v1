@@ -7,17 +7,19 @@ import pl.otwartemigawki.OtwarteMigawkiApp.model.AvailableDate;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.SessionType;
 import pl.otwartemigawki.OtwarteMigawkiApp.repository.AvailableDateRepository;
 import pl.otwartemigawki.OtwarteMigawkiApp.repository.SessionTypeRepository;
+import pl.otwartemigawki.OtwarteMigawkiApp.repository.TimeRepository;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class AvailableDateServiceImpl implements AvailableDateService {
     private final AvailableDateRepository availableDateRepository;
+    private final TimeRepository timeRepository;
     @Autowired
     public AvailableDateServiceImpl(SessionTypeRepository sessionTypeRepository,
-                                    AvailableDateRepository availableDateRepository) {
+                                    AvailableDateRepository availableDateRepository, TimeRepository timeRepository) {
         this.availableDateRepository = availableDateRepository;
+        this.timeRepository = timeRepository;
     }
 
     @Override
@@ -41,5 +43,20 @@ public class AvailableDateServiceImpl implements AvailableDateService {
         newAvailableDate.setDate(date);
         newAvailableDate.setIdSessionType(sessionType);
         return availableDateRepository.save(newAvailableDate);
+    }
+
+    @Override
+    public AvailableDate getAvailableDateByDateAndTime(LocalDate date, Integer hour) {
+        AvailableDate foundDate = availableDateRepository.findAvailableDateByDate(date);
+        if (foundDate != null) {
+            boolean hourExists = foundDate.getTimes().stream().anyMatch(time -> time.getHour() == hour);
+            return hourExists ? foundDate : null;
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteAvailableDate(AvailableDate availableDate) {
+            availableDateRepository.delete(availableDate);
     }
 }

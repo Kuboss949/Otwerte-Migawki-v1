@@ -9,6 +9,7 @@ import pl.otwartemigawki.OtwarteMigawkiApp.model.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.service.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.util.SessionTypeDatesMapper;
 import pl.otwartemigawki.OtwarteMigawkiApp.util.SessionUtil;
+import pl.otwartemigawki.OtwarteMigawkiApp.util.UpcomingSessionsMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,5 +104,13 @@ public class SessionController {
         User user = userService.getUserById(userId);
         List<UserSessionDTO> galleries = userSessionService.getAllSessionsForUser(user).stream().map(SessionUtil::mapToDto).toList();
         return ResponseEntity.ok(galleries);
+    }
+
+    @GetMapping("/all-upcoming")
+    public ResponseEntity<List<UpcomingSessionDTO>> getAllUpcomingSessions()
+    {
+        List <UserSession> upcomingSessionsList = sessionService.getAllUpcomingSessions();
+        List<UpcomingSessionDTO> upcomingSessions = UpcomingSessionsMapper.mapUserSessionsToDTOList(upcomingSessionsList);
+        return ResponseEntity.ok(upcomingSessions);
     }
 }
