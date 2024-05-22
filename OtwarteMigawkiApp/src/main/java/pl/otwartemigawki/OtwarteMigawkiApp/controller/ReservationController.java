@@ -19,17 +19,17 @@ public class ReservationController {
 
     private final UserController userController;
     private final UserSessionService userSessionService;
-    private final SessionService sessionService;
+    private final SessionTypeService sessionTypeService;
     private final UserService userService;
     private final JwtService jwtService;
     private final AvailableDateService availableDateService;
     private final TimeService timeService;
 
-    public ReservationController(UserService userService, UserController userController, UserSessionService userSessionService, SessionService sessionService, JwtService jwtService, AvailableDateService availableDateService, TimeService timeService) {
+    public ReservationController(UserService userService, UserController userController, UserSessionService userSessionService, SessionTypeService sessionTypeService, JwtService jwtService, AvailableDateService availableDateService, TimeService timeService) {
         this.userController = userController;
         this.userSessionService = userSessionService;
         this.userService = userService;
-        this.sessionService = sessionService;
+        this.sessionTypeService = sessionTypeService;
         this.jwtService = jwtService;
         this.availableDateService = availableDateService;
         this.timeService = timeService;
@@ -48,7 +48,7 @@ public class ReservationController {
             if(date != null){
                 LocalDateTime dateTime = LocalDateTime.of(request.getDate(), java.time.LocalTime.of(request.getHour(), 0));
                 Instant instantDateTime = dateTime.toInstant(ZoneOffset.UTC);
-                SessionType sessionType = sessionService.getSessionTypeByName(request.getSessionTypeName());
+                SessionType sessionType = sessionTypeService.getSessionTypeByName(request.getSessionTypeName());
                 UserSession userSession = new UserSession();
                 userSession.setIdUser(user);
                 userSession.setDate(instantDateTime);

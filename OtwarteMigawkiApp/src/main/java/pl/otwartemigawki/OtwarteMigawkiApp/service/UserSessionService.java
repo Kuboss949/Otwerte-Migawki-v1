@@ -10,4 +10,5 @@ import java.util.List;
 public interface UserSessionService {
     void  makeReservation(UserSession userSession);
     List<UserSession> getAllSessionsForUser(User user);
+    List<UserSession> getAllUpcomingSessions();
 }

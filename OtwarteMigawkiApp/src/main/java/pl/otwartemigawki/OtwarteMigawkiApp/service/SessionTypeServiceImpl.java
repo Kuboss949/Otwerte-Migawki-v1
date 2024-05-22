@@ -2,23 +2,23 @@ package pl.otwartemigawki.OtwarteMigawkiApp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.otwartemigawki.OtwarteMigawkiApp.dto.AddSessionTypeRequestDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.SessionType;
-import pl.otwartemigawki.OtwarteMigawkiApp.model.UserSession;
 import pl.otwartemigawki.OtwarteMigawkiApp.repository.SessionTypeRepository;
-import pl.otwartemigawki.OtwarteMigawkiApp.repository.UserSessionRepository;
+import pl.otwartemigawki.OtwarteMigawkiApp.util.SessionTypeReqToObjMapper;
 
+import java.io.IOException;
 import java.util.List;
 @Service
-public class SessionServiceImpl implements SessionService {
+public class SessionTypeServiceImpl implements SessionTypeService {
 
     private final SessionTypeRepository sessionTypeRepository;
-    private final UserSessionRepository userSessionRepository;
+    private final GoogleCloudStorageService googleCloudStorageService;
 
     @Autowired
-    public SessionServiceImpl(SessionTypeRepository sessionTypeRepository,
-                              UserSessionRepository userSessionRepository) {
+    public SessionTypeServiceImpl(SessionTypeRepository sessionTypeRepository, GoogleCloudStorageService googleCloudStorageService) {
         this.sessionTypeRepository = sessionTypeRepository;
-        this.userSessionRepository = userSessionRepository;
+        this.googleCloudStorageService = googleCloudStorageService;
     }
 
     @Override
@@ -27,7 +27,8 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public void addSessionType(SessionType sessionType) {
+    public void addSessionType(AddSessionTypeRequestDTO request) throws IOException {
+        SessionType sessionType = SessionTypeReqToObjMapper.mapFromRequest(request, googleCloudStorageService);
         sessionTypeRepository.save(sessionType);
     }
 
@@ -41,8 +42,5 @@ public class SessionServiceImpl implements SessionService {
         return sessionTypeRepository.findBySessionTypeName(sessionTypeName);
     }
 
-    @Override
-    public List<UserSession> getAllUpcomingSessions() {
-        return userSessionRepository.findAllUpcomingSessions();
-    }
+
 }

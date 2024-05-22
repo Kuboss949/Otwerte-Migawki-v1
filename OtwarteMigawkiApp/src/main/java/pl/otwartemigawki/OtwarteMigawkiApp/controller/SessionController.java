@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.service.*;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/session")
 @CrossOrigin(origins = "http://localhost:3000")
 public class SessionController {
-    private final SessionService sessionService;
+    private final SessionTypeService sessionTypeService;
     private final TimeService timeService;
     private final AvailableDateService availableDateService;
     private final UserService userService;
@@ -26,8 +27,8 @@ public class SessionController {
 
 
     @Autowired
-    public SessionController(SessionService sessionService, TimeService timeService, AvailableDateService availableDateService, UserService userService, UserSessionService userSessionService) {
-        this.sessionService = sessionService;
+    public SessionController(SessionTypeService sessionTypeService, TimeService timeService, AvailableDateService availableDateService, UserService userService, UserSessionService userSessionService) {
+        this.sessionTypeService = sessionTypeService;
         this.timeService = timeService;
         this.availableDateService = availableDateService;
         this.userService = userService;
@@ -37,28 +38,27 @@ public class SessionController {
     @GetMapping("/all")
 
     public ResponseEntity<List<SessionTypeDTO>> getAllSessionTypes(){
-        List<SessionType> types = sessionService.getAllSessionTypes();
+        List<SessionType> types = sessionTypeService.getAllSessionTypes();
         List<SessionTypeDTO> dtos = types.stream().map(SessionUtil::mapToDTO).toList();
         return ResponseEntity.ok(dtos);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<ApiResponseDTO> addSession(@RequestBody SessionTypeDTO sessionTypeDTO){
+    @PostMapping(headers = {"Content-Type=multipart/form-data"}, value = "/add")
+    public ResponseEntity<ApiResponseDTO> addSession(@ModelAttribute AddSessionTypeRequestDTO request){
         try {
-            SessionType type = SessionUtil.createSessionTypeFromDTO(sessionTypeDTO);
-            sessionService.addSessionType(type);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDTO("Session added successfully", true));
+            //AddSessionTypeRequestDTO request = new AddSessionTypeRequestDTO(sessionTypeName, description, price, photo);
+            sessionTypeService.addSessionType(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDTO("Pomyślnie dodano nowy typ sesji!", true));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponseDTO("Failed to add session: " + e.getMessage(), false));
+                    .body(new ApiResponseDTO("Błąd: nie udało się dodać sesji", false));
         }
     }
 
     @DeleteMapping("/delete/{sessionTypeId}")
     public ResponseEntity<ApiResponseDTO> deleteSessionType(@PathVariable Long sessionTypeId) {
         try{
-            sessionService.deleteSessionType(sessionTypeId);
+            sessionTypeService.deleteSessionType(sessionTypeId);
             return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDTO("Session deleted successfully", true));
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -68,7 +68,7 @@ public class SessionController {
 
     @GetMapping("/fetchTimes")
     public ResponseEntity<List<SessionTypeDatesDTO>> getSessionTypesWithDates() {
-        List<SessionType> sessionTypes = sessionService.getAllSessionTypes();
+        List<SessionType> sessionTypes = sessionTypeService.getAllSessionTypes();
         List<SessionTypeDatesDTO> response = new ArrayList<>();
 
         for (SessionType sessionType : sessionTypes) {
@@ -85,7 +85,7 @@ public class SessionController {
         String sessionTypeName = sessionTypeDatesDTO.getSessionTypeName();
         List<AvailableDateDTO> availableDates = sessionTypeDatesDTO.getAvailableDates();
 
-        SessionType sessionType = sessionService.getSessionTypeByName(sessionTypeName);
+        SessionType sessionType = sessionTypeService.getSessionTypeByName(sessionTypeName);
         if (sessionType == null) {
             return ResponseEntity.badRequest().body(new ApiResponseDTO("Nie znaleziono typu sesji", false));
         }
@@ -109,7 +109,7 @@ public class SessionController {
     @GetMapping("/all-upcoming")
     public ResponseEntity<List<UpcomingSessionDTO>> getAllUpcomingSessions()
     {
-        List <UserSession> upcomingSessionsList = sessionService.getAllUpcomingSessions();
+        List <UserSession> upcomingSessionsList = userSessionService.getAllUpcomingSessions();
         List<UpcomingSessionDTO> upcomingSessions = UpcomingSessionsMapper.mapUserSessionsToDTOList(upcomingSessionsList);
         return ResponseEntity.ok(upcomingSessions);
     }

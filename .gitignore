@@ -28,6 +28,7 @@ OtwarteMigawkiApp/HELP.md
 
 # Ignore directories
 OtwarteMigawkiApp/target/
+OtwarteMigawkiApp/src/main/resources/keystore/google-cloud-storage.json
 OtwarteMigawkiApp/!.mvn/wrapper/maven-wrapper.jar
 
 # Allow target directories under src/main and src/test

@@ -25,4 +25,9 @@ public class UserSessionServiceImpl implements UserSessionService{
     public List<UserSession> getAllSessionsForUser(User user) {
         return userSessionRepository.findUserSessionsByIdUser(user);
     }
+
+    @Override
+    public List<UserSession> getAllUpcomingSessions() {
+        return userSessionRepository.findAllUpcomingSessions();
+    }
 }

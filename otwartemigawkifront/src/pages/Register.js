@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { handlePost } from '../api/PostApi.js';
 import { InputBox } from '../components/InputBox.js';
+import usePost from '../hooks/usePost.js';
+import Popup from '../components/Popup.js';
 import "../css/Login.css";
 import { updateDisableSubmit, isValidEmail, isValidPhoneNumber, isValidName, isValidPassword} from '../validationFunc.js';
 
@@ -11,9 +12,7 @@ const Register = () => {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [phone, setPhone] = useState('');
-  const [popupMessage, setPopupMessage] = useState('');
-  const [showPopup, setShowPopup] = useState(false);
-  const [responseSuccess, setResponseSuccess] = useState(false);
+  const { popupMessage, responseSuccess, showPopup, handlePost, closePopup } = usePost();
   const [disableSubmit, setDisableSubmit] = useState(true);
 
   useEffect(() => {
@@ -30,7 +29,7 @@ const Register = () => {
       phone: phone,
       isTmp: false
     };
-    await handlePost('auth/register', requestBody, setPopupMessage, setResponseSuccess, setShowPopup);
+    await handlePost('auth/register', requestBody);
   };
 
   const isValidRepassword = (value) => {
@@ -62,13 +61,12 @@ const Register = () => {
         <a href="/login" className='login-page-link'>Masz już konto?</a>
         <button type="submit" className='site-button' disabled={disableSubmit}>Zarejestruj</button>
       </form>
-      {showPopup && (
-        <div className={`popup ${responseSuccess ? 'success' : 'failed'}`}>
-          {/* Display popup message */}
-          <p>{popupMessage}</p>
-          <button className='site-button' onClick={() => setShowPopup(false)} >Zamknij</button>
-        </div>
-      )}
+      <Popup
+        showPopup={showPopup}
+        popupMessage={popupMessage}
+        responseSuccess={responseSuccess}
+        onClose={closePopup}
+      />
     </div>
   );
 }

@@ -46,7 +46,9 @@ const PriceSegment = ({type, price, description, photo}) =>{
 
   return(
   <div className='price-segment sparkle u-hover--sparkle'>
-    <img src={photo} className='price-segment-image' alt={type}/>
+    <div className='price-segment-image-div'>
+      <img src={photo} className='price-segment-image' alt={type}/>
+    </div>
     <div className='price-segment-description'>
       <h2>{type}</h2> 
       <h4>{price} PLN</h4>

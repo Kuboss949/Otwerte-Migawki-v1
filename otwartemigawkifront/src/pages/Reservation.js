@@ -5,9 +5,9 @@ import AppBar from '../components/AppBar.js';
 import { InputBox, SelectBox, Checkbox } from '../components/InputBox.js';
 import "../css/Reservation.css";
 import { fetchData } from '../api/GetApi.js';
-import { handlePost } from '../api/PostApi.js';
 import { isValidName, isValidPhoneNumber, updateDisableSubmit } from '../validationFunc.js';
-
+import Popup from '../components/Popup.js';
+import usePost from '../hooks/usePost.js';
 
 const Reservation = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -20,13 +20,11 @@ const Reservation = () => {
   const [datesTimes, setDatesTimes] = useState([]);
   const [selectedSessionType, setSelectedSessionType] = useState('notValue');
   const [timesForCurrentDate, setTimesForCurrentDate] = useState([]);
-  const [popupMessage, setPopupMessage] = useState('');
-  const [responseSuccess, setResponseSuccess] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState(true);
   const [tmpName, setTmpName] = useState('');
   const [tmpSurname, setTmpSurname] = useState('');
   const [tmpPhone, setTmpPhone] = useState('');
+  const { popupMessage, responseSuccess, showPopup, handlePost, closePopup } = usePost();
   
   
   
@@ -46,7 +44,7 @@ const Reservation = () => {
     };
     console.log(requestBody);
     console.log(requestBody.isRegistered);
-    await handlePost('reservation/add', requestBody, setPopupMessage, setResponseSuccess, setShowPopup);
+    await handlePost('reservation/add', requestBody);
   };
 
   useEffect(() => {
@@ -84,7 +82,7 @@ const Reservation = () => {
       return;
     }
       setDisableSubmit(false);
-  },[chosenDate, selectedSessionType, selectedHour])
+  },[chosenDate, selectedSessionType, selectedHour, isAuthenticated])
 
   const isSameDate = (d1, d2) => {
     return (
@@ -220,13 +218,12 @@ const Reservation = () => {
           } 
         </div>
       </div>
-      {showPopup && (
-        <div className={`popup ${responseSuccess ? 'success' : 'failed'}`}>
-          {/* Display popup message */}
-          <p>{popupMessage}</p>
-          <button className='site-button' onClick={() => setShowPopup(false)}>Zamknij</button>
-        </div>
-      )}
+      <Popup
+        showPopup={showPopup}
+        popupMessage={popupMessage}
+        responseSuccess={responseSuccess}
+        onClose={closePopup}
+      />
     </div>
   );
 };
