@@ -10,4 +10,5 @@ public interface GoogleCloudStorageService {
     byte[] downloadFile(String fileName);
 
     boolean deleteFile(String fileName);
+    String uploadFile(byte[] fileData) throws IOException;
 }

@@ -12,6 +12,8 @@ import java.util.Set;
 @Entity
 @Table(name = "gallery")
 public class Gallery {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_gallery", nullable = false)
@@ -23,7 +25,8 @@ public class Gallery {
     @OneToMany(mappedBy = "idGallery")
     private Set<GalleryPhoto> galleryPhotos = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "idGallery")
-    private Set<UserSession> userSessions = new LinkedHashSet<>();
+
+    @OneToOne(mappedBy = "idGallery")
+    private UserSession userSession;
 
 }

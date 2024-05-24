@@ -4,15 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.service.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.util.SessionTypeDatesMapper;
-import pl.otwartemigawki.OtwarteMigawkiApp.util.SessionUtil;
-import pl.otwartemigawki.OtwarteMigawkiApp.util.UpcomingSessionsMapper;
+import pl.otwartemigawki.OtwarteMigawkiApp.util.SessionMapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -24,22 +23,24 @@ public class SessionController {
     private final AvailableDateService availableDateService;
     private final UserService userService;
     private final UserSessionService userSessionService;
+    private final JwtService jwtService;
 
 
     @Autowired
-    public SessionController(SessionTypeService sessionTypeService, TimeService timeService, AvailableDateService availableDateService, UserService userService, UserSessionService userSessionService) {
+    public SessionController(SessionTypeService sessionTypeService, TimeService timeService, AvailableDateService availableDateService, UserService userService, UserSessionService userSessionService, JwtService jwtService) {
         this.sessionTypeService = sessionTypeService;
         this.timeService = timeService;
         this.availableDateService = availableDateService;
         this.userService = userService;
         this.userSessionService = userSessionService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping("/all")
 
     public ResponseEntity<List<SessionTypeDTO>> getAllSessionTypes(){
         List<SessionType> types = sessionTypeService.getAllSessionTypes();
-        List<SessionTypeDTO> dtos = types.stream().map(SessionUtil::mapToDTO).toList();
+        List<SessionTypeDTO> dtos = types.stream().map(SessionMapper::mapToSessionTypeDTO).toList();
         return ResponseEntity.ok(dtos);
     }
 
@@ -102,15 +103,34 @@ public class SessionController {
     @GetMapping("/sessions/{userId}")
     public ResponseEntity<List<UserSessionDTO>> getSessionsForUser(@PathVariable Long userId) {
         User user = userService.getUserById(userId);
-        List<UserSessionDTO> galleries = userSessionService.getAllSessionsForUser(user).stream().map(SessionUtil::mapToDto).toList();
+        List<UserSessionDTO> galleries = userSessionService.getAllSessionsForUser(user).stream().map(SessionMapper::mapToDto).toList();
         return ResponseEntity.ok(galleries);
     }
 
     @GetMapping("/all-upcoming")
     public ResponseEntity<List<UpcomingSessionDTO>> getAllUpcomingSessions()
     {
-        List <UserSession> upcomingSessionsList = userSessionService.getAllUpcomingSessions();
-        List<UpcomingSessionDTO> upcomingSessions = UpcomingSessionsMapper.mapUserSessionsToDTOList(upcomingSessionsList);
+        List<UpcomingSessionDTO> upcomingSessions = userSessionService.getAllUpcomingSessions();
         return ResponseEntity.ok(upcomingSessions);
+    }
+
+    @GetMapping("/all-user-upcoming")
+    public ResponseEntity<List<UpcomingSessionDTO>> getAllUpcomingSessionsForUser(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue)
+    {
+        try{
+            User user = userService.getUserByEmail(jwtService.extractUserName(cookieValue));
+            List<UpcomingSessionDTO> response = userSessionService.getAllUpcomingSessionsForUserById(user.getId());
+            return ResponseEntity.ok(response);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+        }
+    }
+
+    @GetMapping("/all-without-galleries")
+    public ResponseEntity<List<UpcomingSessionDTO>> getAllSessionsWithoutGalleries()
+    {
+
+        List<UpcomingSessionDTO> sessions = userSessionService.getAllSessionsWithoutGalleries();
+        return ResponseEntity.ok(sessions);
     }
 }

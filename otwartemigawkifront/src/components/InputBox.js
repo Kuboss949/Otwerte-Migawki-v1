@@ -53,7 +53,7 @@ const SelectBox = ({ label, name, options, onChange = () => {} }) => {
       <div className="floating-label">
           <label className="form-label">{label}</label>
           <select className="form-field" name={name} onChange={onChange}>
-              <option value="notValue">Wybierz sesje</option>
+              <option value="notValue"></option>
               {options.map((option, index) => (
                   <option key={index} value={option}>
                       {option}

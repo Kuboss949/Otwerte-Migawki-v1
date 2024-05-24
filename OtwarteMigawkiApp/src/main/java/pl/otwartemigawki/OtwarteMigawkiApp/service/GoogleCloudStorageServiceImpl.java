@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.UUID;
+
 @Service
 public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService{
     @Autowired
@@ -32,5 +34,13 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService{
     public boolean deleteFile(String fileName) {
         BlobId blobId = BlobId.of(bucketName, fileName);
         return storage.delete(blobId);
+    }
+    @Override
+    public String uploadFile(byte[] fileData) throws IOException {
+        String fileName = UUID.randomUUID().toString() + ".jpeg"; // Generate a random file name
+        BlobId blobId = BlobId.of(bucketName, fileName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+        Blob blob = storage.create(blobInfo, fileData);
+        return blob.getMediaLink();
     }
 }

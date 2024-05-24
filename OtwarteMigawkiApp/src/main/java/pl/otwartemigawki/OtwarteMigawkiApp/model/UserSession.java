@@ -30,7 +30,8 @@ public class UserSession {
     @Column(name = "date")
     private Instant date;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_gallery")
     private Gallery idGallery;
 
