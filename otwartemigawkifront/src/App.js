@@ -13,6 +13,7 @@ import ManageClients from './pages/ManageClients';
 import ManageSessions from './pages/ManageSessions';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
+import RabbitMQComponent from './components/RabbitMQComponent';
 
  
 
@@ -23,6 +24,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="mq" element={<RabbitMQComponent username="u1"/>}/>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rejestracja" element={<Register />} />

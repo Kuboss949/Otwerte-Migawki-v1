@@ -9,10 +9,7 @@ import pl.otwartemigawki.OtwarteMigawkiApp.dto.ApiResponseDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.GalleryOverviewDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.User;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.UserSession;
-import pl.otwartemigawki.OtwarteMigawkiApp.service.GalleryService;
-import pl.otwartemigawki.OtwarteMigawkiApp.service.JwtService;
-import pl.otwartemigawki.OtwarteMigawkiApp.service.UserService;
-import pl.otwartemigawki.OtwarteMigawkiApp.service.UserSessionService;
+import pl.otwartemigawki.OtwarteMigawkiApp.service.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,14 +24,16 @@ public class GalleryController {
     private final UserSessionService userSessionService;
     private final UserService userService;
     private final JwtService jwtService;
+    private final NotificationService notificationService;
 
 
     @Autowired
-    public GalleryController(GalleryService galleryService, UserSessionService userSessionService, UserService userService, JwtService jwtService) {
+    public GalleryController(GalleryService galleryService, UserSessionService userSessionService, UserService userService, JwtService jwtService, NotificationService notificationService) {
         this.galleryService = galleryService;
         this.userSessionService = userSessionService;
         this.userService = userService;
         this.jwtService = jwtService;
+        this.notificationService = notificationService;
     }
 
     @PostMapping("/add")
@@ -43,6 +42,7 @@ public class GalleryController {
             Optional<UserSession> userSession = userSessionService.getUserSessionById(request.getSessionId());
             if(userSession.isPresent())
                 galleryService.createGallery(request, userSession.get());
+            notificationService.notifyUser(userSession.get().getIdUser().getUsername(), "Dodano nową galerię!");
             return ResponseEntity.ok(new ApiResponseDTO("Udało się dodać galerię!", true));
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponseDTO("Błąd serwera, nie udało się dodać galerii", false));
@@ -65,5 +65,9 @@ public class GalleryController {
         return null;
     }
 
-
+    @GetMapping("/testQueue")
+    public String testQueue(){
+        notificationService.notifyUser("u1", "Dodano nową galerię!");
+        return "done";
+    }
 }
