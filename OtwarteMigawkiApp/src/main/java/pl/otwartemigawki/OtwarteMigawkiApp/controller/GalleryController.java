@@ -67,7 +67,7 @@ public class GalleryController {
 
     @GetMapping("/testQueue")
     public String testQueue(){
-        notificationService.notifyUser("u1", "Dodano nową galerię!");
+        notificationService.notifyUser("u2@u2.pl", "Dodano nową galerię!");
         return "done";
     }
 }

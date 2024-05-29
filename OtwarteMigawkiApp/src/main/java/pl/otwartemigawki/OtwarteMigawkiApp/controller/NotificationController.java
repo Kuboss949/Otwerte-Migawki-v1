@@ -17,8 +17,8 @@ public class NotificationController {
     private NotificationService notificationService;
 
     @GetMapping("/{username}")
-    public ResponseEntity<List<String>> getNotifications(@PathVariable String username) {
-        List<String> notifications = notificationService.getNotifications(username);
-        return ResponseEntity.ok().body(notifications);
+    public ResponseEntity<String> getNotifications(@PathVariable String username) {
+        String notification = notificationService.getNotification(username);
+        return ResponseEntity.ok().body(notification);
     }
 }

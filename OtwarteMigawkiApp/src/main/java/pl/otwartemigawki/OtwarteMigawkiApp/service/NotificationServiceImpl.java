@@ -31,22 +31,13 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     @Override
-    public List<String> getNotifications(String username) {
+    public String getNotification(String username) {
         String queueName = "notificationQueue-" + username;
         Queue queue = new Queue(queueName, false);
         amqpAdmin.declareQueue(queue);
-        List<String> notifications = new ArrayList<>();
-        boolean hasMessages = true;
+        Object message = rabbitTemplate.receiveAndConvert(queueName);
+        String notification = message == null ? "" : message.toString();
 
-        while (hasMessages) {
-            Object message = rabbitTemplate.receiveAndConvert(queueName);
-            if (message != null) {
-                notifications.add(message.toString());
-            } else {
-                hasMessages = false;
-            }
-        }
-
-        return notifications;
+        return notification;
     }
 }

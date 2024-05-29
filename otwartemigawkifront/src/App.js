@@ -14,15 +14,22 @@ import ManageSessions from './pages/ManageSessions';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
 import RabbitMQComponent from './components/RabbitMQComponent';
+import { NotificationProvider } from './context/NotificationContext';
+import NotificationPopup from './components/Notification';
 
  
 
 import './global.css'
 
 
+const getUsername = () => "u2@u2.pl";
+
 function App() {
+  const username = getUsername();
   return (
+    <NotificationProvider username={username}>
     <BrowserRouter>
+    <NotificationPopup />
       <Routes>
         <Route path="mq" element={<RabbitMQComponent username="u1"/>}/>
         <Route path="/" element={<Home />} />
@@ -55,6 +62,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </NotificationProvider>
   );
 }
 
