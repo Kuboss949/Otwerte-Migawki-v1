@@ -50,7 +50,7 @@ const Reservation = () => {
   useEffect(() => {
     const fetchDataFromApi = async () => {
       try {
-        const result = await fetchData('/api/session/all');
+        const result = await fetchData('/api/session/all-enabled');
         setSessionTypes(result.map(session => session.sessionTypeName));
         const result2 = await fetchData('/api/session/fetchTimes');
         setAvailableDates(result2);

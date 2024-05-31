@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { fetchAuthenticationStatus } from './api/AuthenticationApi';
+import LoadingScreen from './components/LoadingScreen';
 
 const AdminRoute = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -24,7 +25,7 @@ const AdminRoute = () => {
         fetchAuthentication();
     }, []);
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <LoadingScreen/>;
     }
 
   return isAuthenticated && isAdmin ?  <Outlet /> : <Navigate to="/" />;

@@ -5,6 +5,7 @@ import AppBar from '../components/AppBar';
 import { SelectBox } from '../components/InputBox';
 import { fetchData } from '../api/GetApi';
 import { handlePost } from '../api/PostApi';
+import LoadingScreen from '../components/LoadingScreen';
 
 const AddDates = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -21,7 +22,7 @@ const AddDates = () => {
   useEffect(() => {
     const fetchDataFromApi = async () => {
       try {
-        const result = await fetchData('/api/session/all');
+        const result = await fetchData('/api/session/all-enabled');
         setSessionTypes(result.map(session => session.sessionTypeName));
         const result2 = await fetchData('/api/session/fetchTimes');
         setAvailableDates(result2);
@@ -109,7 +110,7 @@ const AddDates = () => {
   ));
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <LoadingScreen />;
   }
 
   return (

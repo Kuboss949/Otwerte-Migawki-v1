@@ -51,4 +51,9 @@ public class UserSessionServiceImpl implements UserSessionService{
         return userSessionRepository.findAllUpcomingSessionsForUserById(id).stream()
                 .map(SessionMapper::mapUserSessionToUpcomingSessionDTO).toList();
     }
+
+    @Override
+    public void deleteSessionByID(Integer id) {
+        userSessionRepository.deleteById(id);
+    }
 }

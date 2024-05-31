@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/session")
-@CrossOrigin(origins = "http://localhost:3000")
 public class SessionController {
     private final SessionTypeService sessionTypeService;
     private final TimeService timeService;
@@ -37,11 +36,15 @@ public class SessionController {
     }
 
     @GetMapping("/all")
-
     public ResponseEntity<List<SessionTypeDTO>> getAllSessionTypes(){
-        List<SessionType> types = sessionTypeService.getAllSessionTypes();
-        List<SessionTypeDTO> dtos = types.stream().map(SessionMapper::mapToSessionTypeDTO).toList();
-        return ResponseEntity.ok(dtos);
+        List<SessionTypeDTO> result = sessionTypeService.getAllSessionTypes();
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/all-enabled")
+    public ResponseEntity<List<SessionTypeDTO>> getAllEnabledSessionTypes(){
+        List<SessionTypeDTO> result = sessionTypeService.getAllEnabledSessionTypes();
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping(headers = {"Content-Type=multipart/form-data"}, value = "/add")
@@ -69,14 +72,7 @@ public class SessionController {
 
     @GetMapping("/fetchTimes")
     public ResponseEntity<List<SessionTypeDatesDTO>> getSessionTypesWithDates() {
-        List<SessionType> sessionTypes = sessionTypeService.getAllSessionTypes();
-        List<SessionTypeDatesDTO> response = new ArrayList<>();
-
-        for (SessionType sessionType : sessionTypes) {
-            SessionTypeDatesDTO sessionTypeDatesDTO = SessionTypeDatesMapper.toDto(sessionType);
-            response.add(sessionTypeDatesDTO);
-        }
-
+        List<SessionTypeDatesDTO> response = sessionTypeService.getAllSessionTypesWithDates();
         return ResponseEntity.ok(response);
     }
 
@@ -132,5 +128,27 @@ public class SessionController {
 
         List<UpcomingSessionDTO> sessions = userSessionService.getAllSessionsWithoutGalleries();
         return ResponseEntity.ok(sessions);
+    }
+
+    @PostMapping("/change-disable-session-state/{id}")
+    public ResponseEntity<ApiResponseDTO> changeSessionTypeToDisabled(@PathVariable Integer id){
+        try{
+            sessionTypeService.toggleDisableSessionState(id);
+            return ResponseEntity.ok(new ApiResponseDTO("Pomyślnie zmieniono status sesji!", true));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponseDTO("Problem ze zmianą stanu sesji.", false));
+        }
+    }
+
+    @DeleteMapping("/cancel-session/{id}")
+    public ResponseEntity<ApiResponseDTO> cancelSession(@PathVariable Integer id){
+        try{
+            userSessionService.deleteSessionByID(id);
+            return ResponseEntity.ok(new ApiResponseDTO("Pomyślnie odwołano sesję!", true));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponseDTO("Problem z odwołaniem sesji, spróbuj ponownie później.", false));
+        }
     }
 }

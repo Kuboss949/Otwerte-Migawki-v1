@@ -1,6 +1,7 @@
 package pl.otwartemigawki.OtwarteMigawkiApp.util;
 
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.GalleryOverviewDTO;
+import pl.otwartemigawki.OtwarteMigawkiApp.dto.GalleryPhotoDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.Gallery;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.GalleryPhoto;
 
@@ -19,6 +20,15 @@ public class GalleryMapper {
             GalleryPhoto coverPhoto = iterator.next();
             dto.setCoverPhoto(coverPhoto.getPath());
         }
+        return dto;
+    }
+
+    public static GalleryPhotoDTO mapToPhotoDto(GalleryPhoto photo){
+        GalleryPhotoDTO dto = new GalleryPhotoDTO();
+        dto.setId(photo.getId());
+        dto.setSrc(photo.getPath());
+        dto.setWidth(440);
+        dto.setHeight(440*photo.getHeight()/ photo.getWidth());
         return dto;
     }
 }

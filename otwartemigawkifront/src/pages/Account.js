@@ -4,6 +4,7 @@ import { InputBox } from '../components/InputBox.js';
 import "../css/Account.css";
 import { handlePost } from '../api/PostApi.js';
 import { fetchUserInfo } from '../api/AccountApi.js';
+import LoadingScreen from '../components/LoadingScreen';
 import { updateDisableSubmit, isValidEmail, isValidPhoneNumber, isValidName, isValidPassword } from '../validationFunc.js';
 
 const Account = () => {
@@ -80,7 +81,7 @@ const Account = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingScreen />;
   }
 
   return (

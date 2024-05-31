@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.AddGalleryRequestDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.ApiResponseDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.GalleryOverviewDTO;
+import pl.otwartemigawki.OtwarteMigawkiApp.dto.GalleryPhotoDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.User;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.UserSession;
 import pl.otwartemigawki.OtwarteMigawkiApp.service.*;
@@ -60,14 +61,15 @@ public class GalleryController {
     }
 
 
-    @GetMapping("/gallery/{galleryId}")
-    public ApiResponseDTO getGalleryById(@PathVariable Integer galleryId) {
-        return null;
+    @GetMapping("/{galleryId}")
+    public ResponseEntity<List<GalleryPhotoDTO>> getGalleryPhotosById(@PathVariable Integer galleryId) {
+        try{
+            List<GalleryPhotoDTO> response = galleryService.getAllPhotosById(galleryId);
+            return ResponseEntity.ok(response);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+        }
     }
 
-    @GetMapping("/testQueue")
-    public String testQueue(){
-        notificationService.notifyUser("u2@u2.pl", "Dodano nową galerię!");
-        return "done";
-    }
+
 }

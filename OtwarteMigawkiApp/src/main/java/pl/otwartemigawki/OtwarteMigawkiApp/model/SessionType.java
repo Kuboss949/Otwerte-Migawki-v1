@@ -35,4 +35,7 @@ public class SessionType {
     @Column(name = "cover_photo_path", length = 50)
     private String coverPhotoPath;
 
+    @Column(name = "disabled", nullable = false)
+    private Boolean disabled = false;
+
 }

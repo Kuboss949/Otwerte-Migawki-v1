@@ -13,7 +13,7 @@ import ManageClients from './pages/ManageClients';
 import ManageSessions from './pages/ManageSessions';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
-import RabbitMQComponent from './components/RabbitMQComponent';
+import LoadingScreen from './components/LoadingScreen';
 import { NotificationProvider } from './context/NotificationContext';
 import NotificationPopup from './components/Notification';
 
@@ -31,7 +31,6 @@ function App() {
     <BrowserRouter>
     <NotificationPopup />
       <Routes>
-        <Route path="mq" element={<RabbitMQComponent username="u1"/>}/>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rejestracja" element={<Register />} />

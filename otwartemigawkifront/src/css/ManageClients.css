@@ -22,7 +22,7 @@ thead {
 	}
 }
 
-.deleteButton{
+.disable-button{
     font-size: 1em;
     background-color: #7e0808;
     color:white;
@@ -31,9 +31,25 @@ thead {
     border-radius: 10px;
 }
 
-.deleteButton:hover{
+.disable-button:hover{
     transition-duration: 300ms;
     background-color: #d17c7c;
+    color:rgb(0, 0, 0);
+    cursor: pointer;
+}
+
+.enable-button{
+    font-size: 1em;
+    background-color: #074729;
+    color:white;
+    padding: 10px;
+    border:none;
+    border-radius: 10px;
+}
+
+.enable-button:hover{
+    transition-duration: 300ms;
+    background-color: #369470;
     color:rgb(0, 0, 0);
     cursor: pointer;
 }

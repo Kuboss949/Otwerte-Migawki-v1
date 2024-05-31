@@ -6,6 +6,7 @@ import { useTable } from 'react-table';
 import { fetchData } from '../api/GetApi.js';
 import usePost from '../hooks/usePost.js';
 import Popup from '../components/Popup.js';
+import axios from 'axios';
 
 const ManageSessions = () => {
   const [sessionDetails, setSessionDetails] = useState([]);
@@ -17,6 +18,19 @@ const ManageSessions = () => {
   const [price, setPrice] = useState(null);
   const [photo, setPhoto] = useState(null);
 
+  const fetchAllSessions = async () => {
+    try {
+      const sessionData = await fetchData('/api/session/all');
+      const upcomingData = await fetchData('/api/session/all-upcoming');
+      setSessionDetails(sessionData);
+      setUpcomingSessions(upcomingData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -26,26 +40,29 @@ const ManageSessions = () => {
     formData.append('photo', photo);
 
     await handlePost('session/add', formData, true);
+    fetchAllSessions();
   };
 
   const handleFileChange = (e) => {
     setPhoto(e.target.files[0]);
   };
 
+  const handleToggle = async (id) => {
+    await handlePost('session/change-disable-session-state/' + id, {});
+    fetchAllSessions();
+  };
+
+  const handleDeleteSession = async (id) => {
+    try {
+      await axios.delete('/api/session/cancel-session/' + id);
+      fetchAllSessions();
+    } catch (error) {
+      console.error("There was an error deleting the session type!", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchSessionDetails = async () => {
-      try {
-        const sessionData = await fetchData('/api/session/all');
-        const upcomingData = await fetchData('/api/session/all-upcoming');
-        setSessionDetails(sessionData);
-        setUpcomingSessions(upcomingData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSessionDetails();
+    fetchAllSessions();
   }, []);
 
   const sessionColumns = useMemo(() => [
@@ -62,10 +79,21 @@ const ManageSessions = () => {
       accessor: "price",
     },
     {
+      Header: "Dezaktywowana",
+      accessor: "disabled",
+      Cell: ({ value }) => (value ? 'Tak' : 'Nie'),
+    },
+    {
       Header: "Akcje",
-      Cell: ({ row }) => (
-        <button className='deleteButton' onClick={() => handleDelete(row.original.id)}>Usuń</button>
-      )
+      Cell: ({ row }) => {
+        const isDisabled = row.original.disabled;
+        return (
+          <button className={isDisabled ? 'enable-button' : 'disable-button'}
+            onClick={() => handleToggle(row.original.sessionTypeId)}>
+            {isDisabled ? 'Aktywuj' : 'Dezaktywuj'}
+          </button>
+        );
+      },
     },
   ], []);
 
@@ -97,14 +125,10 @@ const ManageSessions = () => {
     {
       Header: "Akcje",
       Cell: ({ row }) => (
-        <button className='deleteButton' onClick={() => handleDelete(row.original.id)}>Odwołaj sesje</button>
+        <button className='deleteButton' onClick={() => handleDeleteSession(row.original.id)}>Odwołaj sesje</button>
       )
     },
   ], []);
-
-  const handleDelete = (id) => {
-    console.log("Delete button clicked for ID:", id);
-  };
 
   const {
     getTableProps: getSessionTableProps,
@@ -135,18 +159,18 @@ const ManageSessions = () => {
         <h1 className='flex-centered site-header'>Sesje</h1>
         <div className='add-session flex-centered'>
           <form className='flex-centered' method='POST' onSubmit={handleSubmit} encType="multipart/form-data">
-            <InputBox 
-              label='Nazwa sesji' 
+            <InputBox
+              label='Nazwa sesji'
               name='session-name'
               onChange={(e) => setNewSessionTypeName(e.target.value)}
             />
-            <InputBox 
-              label='Opis' 
+            <InputBox
+              label='Opis'
               name='session-desc'
               onChange={(e) => setDescription(e.target.value)}
             />
-            <InputBox 
-              label='Cena' 
+            <InputBox
+              label='Cena'
               name='price'
               onChange={(e) => setPrice(e.target.value)}
             />

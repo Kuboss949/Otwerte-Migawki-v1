@@ -10,7 +10,9 @@ import pl.otwartemigawki.OtwarteMigawkiApp.model.UserSession;
 
 public class SessionMapper {
     public static SessionTypeDTO mapToSessionTypeDTO(SessionType type) {
-        return new SessionTypeDTO(type.getId(), type.getSessionTypeName(), type.getDescription(), type.getPrice(), type.getCoverPhotoPath());
+        return new SessionTypeDTO(type.getId(), type.getSessionTypeName(),
+                type.getDescription(), type.getPrice(), type.getCoverPhotoPath(),
+                type.getDisabled());
     }
 
     public static SessionType createSessionTypeFromDTO(SessionTypeDTO sessionTypeDTO){

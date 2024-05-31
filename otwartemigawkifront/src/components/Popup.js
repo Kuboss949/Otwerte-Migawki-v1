@@ -7,7 +7,7 @@ const Popup = ({ showPopup, popupMessage, responseSuccess, onClose }) => {
   return (
     <div className={`popup ${responseSuccess ? 'success' : 'error'}`}>
       <p>{popupMessage}</p>
-      <button className='site-button' onClick={onClose}>Close</button>
+      <button className='site-button' onClick={onClose}>Zamknij</button>
     </div>
   );
 };

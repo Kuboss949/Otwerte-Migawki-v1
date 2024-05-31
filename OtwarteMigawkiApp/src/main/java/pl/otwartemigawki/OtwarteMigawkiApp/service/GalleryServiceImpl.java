@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.AddGalleryRequestDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.GalleryOverviewDTO;
+import pl.otwartemigawki.OtwarteMigawkiApp.dto.GalleryPhotoDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.Gallery;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.GalleryPhoto;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.UserSession;
@@ -17,7 +18,9 @@ import pl.otwartemigawki.OtwarteMigawkiApp.util.ImageConverter;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GalleryServiceImpl implements GalleryService {
@@ -67,6 +70,14 @@ public class GalleryServiceImpl implements GalleryService {
 
         userSession.setIdGallery(gallery);
         userSessionRepository.save(userSession);
+    }
+
+    @Override
+    public List<GalleryPhotoDTO> getAllPhotosById(Integer galleryId) {
+        Optional<Gallery> gallery = galleryRepository.findById(Long.valueOf(galleryId));
+        if(gallery.isPresent())
+            return gallery.get().getGalleryPhotos().stream().map(GalleryMapper::mapToPhotoDto).toList();
+        return new ArrayList<>();
     }
 
 

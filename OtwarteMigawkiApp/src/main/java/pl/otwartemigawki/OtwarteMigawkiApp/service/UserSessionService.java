@@ -17,4 +17,6 @@ public interface UserSessionService {
     Optional<UserSession> getUserSessionById(Integer sessionId);
 
     List<UpcomingSessionDTO> getAllUpcomingSessionsForUserById(Integer id);
+
+    void deleteSessionByID(Integer id);
 }

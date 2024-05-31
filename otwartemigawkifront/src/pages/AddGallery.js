@@ -8,6 +8,7 @@ import { fetchData } from '../api/GetApi.js';
 import DropzoneComponent from '../components/DropzoneComponent.js';
 import usePost from '../hooks/usePost.js';
 import Popup from '../components/Popup.js';
+import LoadingScreen from '../components/LoadingScreen.js';
 
 const AddGallery = () => {
   const [clientsList, setClientsList] = useState([]);
@@ -83,7 +84,7 @@ const AddGallery = () => {
   };
 
   if (loading) {
-    return (<div>Loading...</div>);
+    return <LoadingScreen />;
   }
 
   const handleSubmit = async (e) => {

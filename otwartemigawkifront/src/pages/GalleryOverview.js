@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AppBar from '../components/AppBar.js';
 import "../css/GalleryOverview.css";
 import { fetchData } from '../api/GetApi.js';
+import LoadingScreen from '../components/LoadingScreen.js';
 
 
 /*
@@ -14,6 +15,7 @@ const GalleryOverview = () => {
   const [galleries, setGalleries] = useState([]);
   const [upcomingSessions, setUpcomingSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  
   
   
 
@@ -35,7 +37,7 @@ const GalleryOverview = () => {
 
 
   if(loading){
-    return(<div>Loading...</div>)
+    return <LoadingScreen />;
   }
 
   return (
@@ -68,7 +70,7 @@ const GalleryOverview = () => {
 
 const GalleryCard = ({ image, name, date, galleryId}) => {
   return(
-    <a className='gallery-card' href={`/gallery/${galleryId}`}>
+    <a className='gallery-card' href={`/galeria/${galleryId}`}>
     <img className='gallery-thumbnail' src={image}></img>
     <h3 className='gallery-desc'>{name}</h3>
     <h4 className='gallery-desc'>{date.slice(0, 10)}</h4>
