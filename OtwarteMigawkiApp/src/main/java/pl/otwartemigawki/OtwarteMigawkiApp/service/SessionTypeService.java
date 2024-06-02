@@ -14,11 +14,7 @@ public interface SessionTypeService {
     List<SessionTypeDTO> getAllEnabledSessionTypes();
     void addSessionType(AddSessionTypeRequestDTO request) throws IOException;
     void deleteSessionType(Long sessionTypeId);
-
     SessionType getSessionTypeByName(String sessionTypeName);
-
-
     List<SessionTypeDatesDTO> getAllSessionTypesWithDates();
-
     void toggleDisableSessionState(Integer id);
 }

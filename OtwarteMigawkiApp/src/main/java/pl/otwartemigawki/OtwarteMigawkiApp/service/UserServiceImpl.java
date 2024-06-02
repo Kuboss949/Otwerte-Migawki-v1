@@ -6,13 +6,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import pl.otwartemigawki.OtwarteMigawkiApp.dto.TemporaryUserRequestDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserSessionDetailsDTO;
+import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserWithDetailsDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.User;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.UserDetailData;
 import pl.otwartemigawki.OtwarteMigawkiApp.repository.UserDetailRepository;
 import pl.otwartemigawki.OtwarteMigawkiApp.repository.UserRepository;
+import pl.otwartemigawki.OtwarteMigawkiApp.util.UserUtil;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -33,13 +37,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public List<UserSessionDetailsDTO> getUsersWithUnassignedGallery() {
-        return userRepository.findSessionsWithoutGalleries();
+    public List<UserWithDetailsDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map((User user) -> UserUtil.convertToDTO(user, true))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -60,6 +61,23 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("User not found!"));
+    }
+
+    @Override
+    public User createTemporaryUser(TemporaryUserRequestDTO request) {
+        User user = new User();
+        user.setIsTmp(true);
+
+        UserDetailData userDetailData = new UserDetailData();
+        userDetailData.setIdUser(user);
+        userDetailData.setName(request.getName());
+        userDetailData.setSurname(request.getSurname());
+        userDetailData.setPhone(request.getPhone());
+
+        this.saveOrUpdateUser(user);
+        this.saveOrUpdateUserDetail(userDetailData);
+
+        return user;
     }
 
     @Override

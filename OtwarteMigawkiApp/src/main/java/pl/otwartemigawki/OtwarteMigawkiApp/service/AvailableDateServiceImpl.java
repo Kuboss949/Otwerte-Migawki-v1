@@ -22,15 +22,6 @@ public class AvailableDateServiceImpl implements AvailableDateService {
         this.timeRepository = timeRepository;
     }
 
-    @Override
-    public AvailableDate saveAvailableDate(AvailableDate availableDate) {
-        return availableDateRepository.save(availableDate);
-    }
-
-    @Override
-    public AvailableDate getAvailableDateByDate(LocalDate date) {
-        return availableDateRepository.findAvailableDateByDate(date);
-    }
 
     @Override
     public AvailableDate createAvailableDate(SessionType sessionType, AvailableDateDTO availableDateDTO) {
@@ -45,15 +36,6 @@ public class AvailableDateServiceImpl implements AvailableDateService {
         return availableDateRepository.save(newAvailableDate);
     }
 
-    @Override
-    public AvailableDate getAvailableDateByDateAndTime(LocalDate date, Integer hour) {
-        AvailableDate foundDate = availableDateRepository.findAvailableDateByDate(date);
-        if (foundDate != null) {
-            boolean hourExists = foundDate.getTimes().stream().anyMatch(time -> time.getHour() == hour);
-            return hourExists ? foundDate : null;
-        }
-        return null;
-    }
 
     @Override
     public void deleteAvailableDate(AvailableDate availableDate) {

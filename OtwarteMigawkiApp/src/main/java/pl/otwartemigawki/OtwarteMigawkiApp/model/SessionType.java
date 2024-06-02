@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -38,4 +39,16 @@ public class SessionType {
     @Column(name = "disabled", nullable = false)
     private Boolean disabled = false;
 
+    public AvailableDate getAvailableDateByDateTime(LocalDate desiredDate, int desiredHour) {
+        for (AvailableDate availableDate : availableDates) {
+            if (availableDate.getDate().equals(desiredDate)) {
+                for (Time time : availableDate.getTimes()) {
+                    if (time.getHour() == desiredHour) {
+                        return availableDate;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }

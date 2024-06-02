@@ -16,23 +16,9 @@ public class TimeServiceImpl implements TimeService {
     private final TimeRepository timeRepository;
 
     @Autowired
-    public TimeServiceImpl(SessionTypeRepository sessionTypeRepository,
-                           AvailableDateRepository availableDateRepository,
-                           TimeRepository timeRepository) {
+    public TimeServiceImpl(TimeRepository timeRepository) {
 
         this.timeRepository = timeRepository;
-    }
-
-
-
-    @Override
-    public void saveTime(Time time) {
-        timeRepository.save(time);
-    }
-
-    @Override
-    public Time getTimeByHourAndAvailableDate(Integer hour, Integer availableDateId) {
-        return timeRepository.findByHourAndIdAvailableDate(hour, availableDateId);
     }
 
     @Override

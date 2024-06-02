@@ -9,21 +9,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-
-    @Query("SELECT NEW pl.otwartemigawki.OtwarteMigawkiApp.dto.UserSessionDetailsDTO(" +
-            "u.userDetailData.name, " +
-            "u.userDetailData.surname, " +
-            "u.userDetailData.phone, " +
-            "u.email, " +
-            "us.id, " +
-            "st.sessionTypeName, " +
-            "us.date) " +
-            "FROM UserSession us " +
-            "JOIN us.idUser u " +
-            "JOIN us.idSessionType st " +
-            "WHERE us.idGallery IS NULL")
-    List<UserSessionDetailsDTO> findSessionsWithoutGalleries();
-
     Optional<User> findByEmail(String email);
-
 }

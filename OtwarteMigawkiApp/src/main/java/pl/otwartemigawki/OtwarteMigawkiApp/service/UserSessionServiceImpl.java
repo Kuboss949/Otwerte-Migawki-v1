@@ -2,6 +2,7 @@ package pl.otwartemigawki.OtwarteMigawkiApp.service;
 
 import org.springframework.stereotype.Service;
 import pl.otwartemigawki.OtwarteMigawkiApp.dto.UpcomingSessionDTO;
+import pl.otwartemigawki.OtwarteMigawkiApp.dto.UserSessionDTO;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.User;
 import pl.otwartemigawki.OtwarteMigawkiApp.model.UserSession;
 import pl.otwartemigawki.OtwarteMigawkiApp.repository.UserSessionRepository;
@@ -25,8 +26,8 @@ public class UserSessionServiceImpl implements UserSessionService{
     }
 
     @Override
-    public List<UserSession> getAllSessionsForUser(User user) {
-        return userSessionRepository.findUserSessionsByIdUser(user);
+    public List<UserSessionDTO> getAllSessionsForUser(User user) {
+        return userSessionRepository.findUserSessionsByIdUser(user).stream().map(SessionMapper::mapToDto).toList();
     }
 
     @Override

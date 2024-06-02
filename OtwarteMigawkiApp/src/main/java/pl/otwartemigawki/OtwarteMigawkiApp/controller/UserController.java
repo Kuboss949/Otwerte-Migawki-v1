@@ -41,25 +41,9 @@ public class UserController {
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<List<UserWithDetailsDTO>> getAllClients() {
-        List<User> users = userService.getAllUsers(); // Assuming you have a service method to fetch all users
-        List<UserWithDetailsDTO> dtos = users.stream()
-                .map((User user) -> UserUtil.convertToDTO(user, true))
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        List<UserWithDetailsDTO> result = userService.getAllUsers();
+        return ResponseEntity.ok(result);
     }
-
-    @GetMapping("/unassigned-galleries")
-    public ResponseEntity<List<UserSessionDetailsDTO>> getClientsWithUnassignedGallery() {
-        List<UserSessionDetailsDTO> users = userService.getUsersWithUnassignedGallery(); // Assuming you have a service method to fetch all users
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
-    @GetMapping("/get-username")
-    public ResponseEntity<ApiResponseDTO> getAllClients(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue) {
-        User user = userService.getUserByEmail(jwtService.extractUserName(cookieValue));
-        return ResponseEntity.ok(new ApiResponseDTO(user.getUsername(), true));
-    }
-
 
 
     @GetMapping("/get-user-info")
@@ -111,25 +95,5 @@ public class UserController {
                     .body(new ApiResponseDTO("Failed to delete user: " + e.getMessage(), false));
         }
     }
-
-    @PostMapping("/temporary")
-    public User createTemporaryUser(@RequestBody TemporaryUserRequestDTO request) {
-
-        User user = new User();
-        user.setIsTmp(true);
-
-        UserDetailData userDetailData = new UserDetailData();
-        userDetailData.setIdUser(user);
-        userDetailData.setName(request.getName());
-        userDetailData.setSurname(request.getSurname());
-        userDetailData.setPhone(request.getPhone());
-
-        userService.saveOrUpdateUser(user);
-        userService.saveOrUpdateUserDetail(userDetailData);
-
-        return user;
-    }
-
-
 
 }

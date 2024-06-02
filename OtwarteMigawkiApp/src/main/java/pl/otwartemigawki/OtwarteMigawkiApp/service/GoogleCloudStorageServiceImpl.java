@@ -25,16 +25,7 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService{
         Blob blob = storage.create(blobInfo, file.getBytes());
         return blob.getMediaLink();
     }
-    @Override
-    public byte[] downloadFile(String fileName) {
-        Blob blob = storage.get(BlobId.of(bucketName, fileName));
-        return blob.getContent();
-    }
-    @Override
-    public boolean deleteFile(String fileName) {
-        BlobId blobId = BlobId.of(bucketName, fileName);
-        return storage.delete(blobId);
-    }
+
     @Override
     public String uploadFile(byte[] fileData) throws IOException {
         String fileName = UUID.randomUUID().toString() + ".jpeg"; // Generate a random file name

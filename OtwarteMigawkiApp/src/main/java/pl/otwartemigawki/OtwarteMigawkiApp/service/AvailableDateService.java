@@ -8,11 +8,7 @@ import pl.otwartemigawki.OtwarteMigawkiApp.model.SessionType;
 import java.time.LocalDate;
 
 public interface AvailableDateService {
-    AvailableDate saveAvailableDate(AvailableDate availableDate);
-    AvailableDate getAvailableDateByDate(LocalDate date);
-
-    public AvailableDate createAvailableDate(SessionType sessionType, AvailableDateDTO availableDateDTO);
-    AvailableDate getAvailableDateByDateAndTime(LocalDate date, Integer time);
+    AvailableDate createAvailableDate(SessionType sessionType, AvailableDateDTO availableDateDTO);
     void deleteAvailableDate(AvailableDate availableDate);
 
 }

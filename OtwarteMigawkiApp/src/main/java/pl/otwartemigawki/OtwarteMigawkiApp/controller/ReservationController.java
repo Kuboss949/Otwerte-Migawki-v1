@@ -37,35 +37,51 @@ public class ReservationController {
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponseDTO> makeReservation(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue, @RequestBody ReservationRequestDTO request) {
-        try{
-            User user;
-            if (Objects.equals(request.getIsRegistered(), "true")) {
-                user = userService.getUserByEmail(jwtService.extractUserName(cookieValue));
-            } else {
-                user = userController.createTemporaryUser(request.getTemporaryUserInfo());
+        try {
+            User user = getUser(cookieValue, request);
+            SessionType sessionType = sessionTypeService.getSessionTypeByName(request.getSessionTypeName());
+            AvailableDate date = sessionType.getAvailableDateByDateTime(request.getDate(), request.getHour());
+
+            if (date == null) {
+                return ResponseEntity.ok(new ApiResponseDTO("Wybrana data i godzina nie są dłużej dostępne.", false));
             }
-            AvailableDate date = availableDateService.getAvailableDateByDateAndTime(request.getDate(), request.getHour());
-            if(date != null){
-                LocalDateTime dateTime = LocalDateTime.of(request.getDate(), java.time.LocalTime.of(request.getHour(), 0));
-                Instant instantDateTime = dateTime.toInstant(ZoneOffset.UTC);
-                SessionType sessionType = sessionTypeService.getSessionTypeByName(request.getSessionTypeName());
-                UserSession userSession = new UserSession();
-                userSession.setIdUser(user);
-                userSession.setDate(instantDateTime);
-                userSession.setIdSessionType(sessionType);
-                userSessionService.makeReservation(userSession);
-                Optional<Time> timeToDelete = date.getTimes().stream()
-                        .filter(time -> Objects.equals(time.getHour(), request.getHour()))
-                        .findFirst();
-                timeService.deleteTime(timeToDelete.get());
-                if(date.getTimes().size() == 1)
-                    availableDateService.deleteAvailableDate(date);
-                return ResponseEntity.ok( new ApiResponseDTO("Rezerwascja zakończona powodzeniem!",true));
-            }
-        }catch (Exception e){
-            return ResponseEntity.ok( new ApiResponseDTO("Wystąpiły problemy z utworzeniem rezerwacji, spróbuj ponownie później.",false));
+
+            createReservation(user, request, date);
+            return ResponseEntity.ok(new ApiResponseDTO("Rezerwacja zakończona sukcesem!", true));
+
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ApiResponseDTO("Wystąpił problem z rezerwacją, prosimy spróbować później.", false));
         }
-        return ResponseEntity.ok( new ApiResponseDTO("Wystąpiły problemy z utworzeniem rezerwacji, spróbuj ponownie później.",false));
     }
 
+    private User getUser(String cookieValue, ReservationRequestDTO request) {
+        if (Objects.equals(request.getIsRegistered(), "true")) {
+            return userService.getUserByEmail(jwtService.extractUserName(cookieValue));
+        } else {
+            return userService.createTemporaryUser(request.getTemporaryUserInfo());
+        }
+    }
+
+    private void createReservation(User user, ReservationRequestDTO request, AvailableDate date) {
+        LocalDateTime dateTime = LocalDateTime.of(request.getDate(), java.time.LocalTime.of(request.getHour(), 0));
+        Instant instantDateTime = dateTime.toInstant(ZoneOffset.UTC);
+        SessionType sessionType = sessionTypeService.getSessionTypeByName(request.getSessionTypeName());
+
+        UserSession userSession = new UserSession();
+        userSession.setIdUser(user);
+        userSession.setDate(instantDateTime);
+        userSession.setIdSessionType(sessionType);
+
+        userSessionService.makeReservation(userSession);
+
+        Optional<Time> timeToDelete = date.getTimes().stream()
+                .filter(time -> Objects.equals(time.getHour(), request.getHour()))
+                .findFirst();
+
+        timeToDelete.ifPresent(timeService::deleteTime);
+
+        if (date.getTimes().size() == 1) {
+            availableDateService.deleteAvailableDate(date);
+        }
+    }
 }

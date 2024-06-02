@@ -24,21 +24,19 @@ import java.util.Optional;
 public class AuthServiceImpl implements AuthService{
     private final UserRepository userRepository;
     private final UserDetailRepository userDetailRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RoleService roleService;
 
-    public AuthServiceImpl(UserRepository userRepository, UserDetailRepository userDetailRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, RoleService roleService) {
+    public AuthServiceImpl(UserRepository userRepository, UserDetailRepository userDetailRepository, JwtService jwtService, AuthenticationManager authenticationManager, RoleService roleService) {
         this.userRepository = userRepository;
         this.userDetailRepository = userDetailRepository;
-        this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.roleService = roleService;
     }
 
-    public AuthResponseDTO register(UserRequestDTO userRequestDTO){
+    public void register(UserRequestDTO userRequestDTO){
         try {
             UserUtil.checkRegisterRequest(userRequestDTO, userRepository, userDetailRepository);
             User user = UserUtil.createUserFromDTO(userRequestDTO, roleService);
@@ -48,10 +46,6 @@ public class AuthServiceImpl implements AuthService{
             userDetailData.setIdUser(user);
             userDetailRepository.save(userDetailData);
 
-
-            String token = jwtService.generateToken(user);
-
-            return new AuthResponseDTO(token);
         } catch(RegistrationException e){
             throw e;
         } catch(Exception e){

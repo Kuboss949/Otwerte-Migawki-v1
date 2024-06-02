@@ -50,7 +50,6 @@ public class SessionController {
     @PostMapping(headers = {"Content-Type=multipart/form-data"}, value = "/add")
     public ResponseEntity<ApiResponseDTO> addSession(@ModelAttribute AddSessionTypeRequestDTO request){
         try {
-            //AddSessionTypeRequestDTO request = new AddSessionTypeRequestDTO(sessionTypeName, description, price, photo);
             sessionTypeService.addSessionType(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDTO("Pomyślnie dodano nowy typ sesji!", true));
         } catch (Exception e) {
@@ -99,7 +98,7 @@ public class SessionController {
     @GetMapping("/sessions/{userId}")
     public ResponseEntity<List<UserSessionDTO>> getSessionsForUser(@PathVariable Long userId) {
         User user = userService.getUserById(userId);
-        List<UserSessionDTO> galleries = userSessionService.getAllSessionsForUser(user).stream().map(SessionMapper::mapToDto).toList();
+        List<UserSessionDTO> galleries = userSessionService.getAllSessionsForUser(user);
         return ResponseEntity.ok(galleries);
     }
 
