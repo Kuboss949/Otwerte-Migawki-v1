@@ -4,10 +4,10 @@ import 'react-calendar/dist/Calendar.css';
 import AppBar from '../components/AppBar.js';
 import { InputBox, SelectBox, Checkbox } from '../components/InputBox.js';
 import "../css/Reservation.css";
-import { fetchData } from '../api/GetApi.js';
 import { isValidName, isValidPhoneNumber, updateDisableSubmit } from '../validationFunc.js';
 import Popup from '../components/Popup.js';
 import usePost from '../hooks/usePost.js';
+import { fetchReservationData } from '../api/reservation-api.js';
 
 const Reservation = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -25,10 +25,10 @@ const Reservation = () => {
   const [tmpSurname, setTmpSurname] = useState('');
   const [tmpPhone, setTmpPhone] = useState('');
   const { popupMessage, responseSuccess, showPopup, handlePost, closePopup } = usePost();
-  
-  
-  
-  
+
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const tzoffset = (new Date()).getTimezoneOffset() * 60000;
@@ -42,27 +42,11 @@ const Reservation = () => {
       surname: tmpSurname,
       phone: tmpPhone
     };
-    console.log(requestBody);
-    console.log(requestBody.isRegistered);
     await handlePost('reservation/add', requestBody);
   };
 
   useEffect(() => {
-    const fetchDataFromApi = async () => {
-      try {
-        const result = await fetchData('/api/session/all-enabled');
-        setSessionTypes(result.map(session => session.sessionTypeName));
-        const result2 = await fetchData('/api/session/fetchTimes');
-        setAvailableDates(result2);
-        //setIsLoading(false);
-      } catch (error) {
-        setSessionTypes(["Nie udało się połączyć z serwerem"]);
-      }
-    };
-    fetchDataFromApi();
-  }, []);
-
-  useEffect(() => {
+    fetchReservationData(setSessionTypes, setAvailableDates);
     const isLoggedIn = localStorage.getItem('loggedIn');
     if (isLoggedIn === "true") {
       setIsAuthenticated(true);
@@ -70,19 +54,19 @@ const Reservation = () => {
   }, []);
 
   useEffect(() => {
-    if(chosenDate.getDate() === new Date().getDate() 
+    if (chosenDate.getDate() === new Date().getDate()
       || selectedSessionType === "notValue"
       || selectedHour === null
-    ){
+    ) {
       setDisableSubmit(true);
       return;
     }
-    if(!isAuthenticated){
+    if (!isAuthenticated) {
       updateDisableSubmit(setDisableSubmit, 'unregistered-form');
       return;
     }
-      setDisableSubmit(false);
-  },[chosenDate, selectedSessionType, selectedHour, isAuthenticated])
+    setDisableSubmit(false);
+  }, [chosenDate, selectedSessionType, selectedHour, isAuthenticated])
 
   const isSameDate = (d1, d2) => {
     return (
@@ -103,7 +87,7 @@ const Reservation = () => {
 
   const tileDisabled = ({ activeStartDate, date, view }) => {
     const availableDatesArray = datesTimes.map(session => new Date(session.date));
-    
+
     if (view === 'month') {
       const isAvailable = availableDatesArray.some(availableDate =>
         availableDate.getFullYear() === date.getFullYear() &&
@@ -119,7 +103,6 @@ const Reservation = () => {
   const handleHourClick = (hour) => {
     setSelectedHour(hour);
     setChosenDate(selectedDate);
-    console.log(hour);
   };
 
   const handleCheckboxChange = () => {
@@ -144,7 +127,6 @@ const Reservation = () => {
     } else {
       setDatesTimes([]);
     }
-    console.log(datesTimes);
   }
 
   return (
@@ -160,27 +142,27 @@ const Reservation = () => {
               {showAdditionalFields && (
                 <form id="unregistered-form">
                   <SelectBox label="Rodzaj sesji" name="session-type" options={sessionTypes} onChange={handleSessionChange} />
-                  <InputBox 
-                  label="Imię" 
-                  name="name" 
-                  onChange={setTmpName}
-                  validator={isValidName}
-                  validationMsg="To pole nie powinno być puste"
+                  <InputBox
+                    label="Imię"
+                    name="name"
+                    onChange={setTmpName}
+                    validator={isValidName}
+                    validationMsg="To pole nie powinno być puste"
                   />
-                  <InputBox 
-                  label="Nazwisko" 
-                  name="surname"
-                  onChange={setTmpSurname}
-                  validator={isValidName}
-                  validationMsg="To pole nie powinno być puste" 
+                  <InputBox
+                    label="Nazwisko"
+                    name="surname"
+                    onChange={setTmpSurname}
+                    validator={isValidName}
+                    validationMsg="To pole nie powinno być puste"
                   />
-                  <InputBox 
-                  label="Nr Telefonu" 
-                  name="phone-number"
-                  onChange={setTmpPhone}
-                  validator={isValidPhoneNumber}
-                  validationMsg="Wprowadź poprawny numer telefonu"
-                   />
+                  <InputBox
+                    label="Nr Telefonu"
+                    name="phone-number"
+                    onChange={setTmpPhone}
+                    validator={isValidPhoneNumber}
+                    validationMsg="Wprowadź poprawny numer telefonu"
+                  />
                 </form>
               )}
             </>
@@ -206,7 +188,7 @@ const Reservation = () => {
         <div className='sub-section'>
           <h2>Godzina</h2>
           {
-            timesForCurrentDate.map(time => 
+            timesForCurrentDate.map(time =>
               <button
                 className={selectedHour === time && isSameDate(selectedDate, chosenDate) ? 'hour-button clicked-button' : 'hour-button'}
                 onClick={() => handleHourClick(time)}
@@ -215,7 +197,7 @@ const Reservation = () => {
                 {time}:00
               </button>
             )
-          } 
+          }
         </div>
       </div>
       <Popup

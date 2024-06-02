@@ -13,7 +13,6 @@ import ManageClients from './pages/ManageClients';
 import ManageSessions from './pages/ManageSessions';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
-import LoadingScreen from './components/LoadingScreen';
 import { NotificationProvider } from './context/NotificationContext';
 import NotificationPopup from './components/Notification';
 
@@ -22,10 +21,8 @@ import NotificationPopup from './components/Notification';
 import './global.css'
 
 
-const getUsername = () => "u2@u2.pl";
-
 function App() {
-  const username = getUsername();
+  const username = localStorage.getItem("username");
   return (
     <NotificationProvider username={username}>
     <BrowserRouter>

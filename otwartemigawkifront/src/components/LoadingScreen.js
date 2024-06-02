@@ -6,7 +6,7 @@ const LoadingScreen = () => {
       <div className="loading-screen">
         <img src="/images/logo.png" alt="Loading Logo" />
         <p>Ładowanie...</p>
-        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+        <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
       </div>
     );
   };

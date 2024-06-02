@@ -9,25 +9,24 @@ export const NotificationProvider = ({ children, username }) => {
   const [latestMessage, setLatestMessage] = useState(null);
 
   useEffect(() => {
+    if (!username) return;
+
     const fetchMessages = async () => {
-        try {
-          const response = await axios.get(`/api/notifications/${username}`);
-          if (response.data !== undefined && response.data !== '') {
-            setMessages((prevMessages) => [...prevMessages, response.data]);
-            setLatestMessage(response.data);
-            setShowNotification(true);
-            
-          }
-        } catch (error) {
-          console.error('Error fetching messages:', error);
+      try {
+        const response = await axios.get(`/api/notifications/${username}`);
+        if (response.data) {
+          setMessages((prevMessages) => [...prevMessages, response.data]);
+          setLatestMessage(response.data);
+          setShowNotification(true);
         }
-      };
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
 
-    // Set up polling every 5 seconds
     const intervalId = setInterval(fetchMessages, 5000);
-
-    // Clean up interval on component unmount
-    return () => clearInterval(intervalId);
+    
+    return () => clearInterval(intervalId); 
   }, [username]);
 
   const closeNotification = () => {

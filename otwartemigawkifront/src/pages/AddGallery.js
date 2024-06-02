@@ -1,14 +1,12 @@
-// AddGallery.js
-
 import React, { useState, useEffect } from 'react';
 import AppBar from '../components/AppBar.js';
 import { SelectBox } from '../components/InputBox.js';
 import "../css/AddGallery.css";
-import { fetchData } from '../api/GetApi.js';
 import DropzoneComponent from '../components/DropzoneComponent.js';
 import usePost from '../hooks/usePost.js';
 import Popup from '../components/Popup.js';
 import LoadingScreen from '../components/LoadingScreen.js';
+import { fetchUserData } from '../api/add-gallery-api.js';
 
 const AddGallery = () => {
   const [clientsList, setClientsList] = useState([]);
@@ -20,39 +18,12 @@ const AddGallery = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [galleryName, setGalleryName] = useState('');
   const { popupMessage, responseSuccess, showPopup, handlePost, closePopup } = usePost();
-  
+
 
   useEffect(() => {
-    const fetchClientDetails = async () => {
-      try {
-        const data = await fetchData('/api/session/all-without-galleries');
-        const mappedData = mapSessions(data);
-        setMergedData(mappedData);
-        setClientsList(mappedData.map(data => data.client));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchClientDetails();
+    fetchUserData(setMergedData, setClientsList, setLoading);
   }, []);
 
-  function mapSessions(inputArray) {
-    const result = inputArray.reduce((acc, item) => {
-      const clientKey = `${item.clientName} ${item.clientSurname} (${item.clientPhone})`;
-      if (!acc[clientKey]) {
-        acc[clientKey] = {
-          client: clientKey,
-          sessions: []
-        };
-      }
-      acc[clientKey].sessions.push({ id: item.id, sessionTypeName: item.sessionTypeName, date: item.date });
-      return acc;
-    }, {});
-
-    return Object.values(result);
-  }
 
   const handleClientChange = (e) => {
     const clientName = e.target.value;
@@ -83,25 +54,23 @@ const AddGallery = () => {
     setSessionId(id);
   };
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
-
   const handleSubmit = async (e) => {
-    console.log(client)
-    console.log(sessionId)
     if (client !== '' && sessionId !== null) {
       e.preventDefault();
       const formData = new FormData();
       formData.append('sessionId', sessionId);
       formData.append('galleryName', galleryName);
       uploadedFiles.forEach((file, index) => {
-        formData.append(`files[${index}]`, file); 
+        formData.append(`files[${index}]`, file);
       });
 
       await handlePost('gallery/add', formData, true);
     }
   };
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div>

@@ -2,10 +2,11 @@ import { React, useState, useEffect } from 'react';
 import AppBar from '../components/AppBar.js';
 import { InputBox } from '../components/InputBox.js';
 import "../css/Account.css";
-import { handlePost } from '../api/PostApi.js';
-import { fetchUserInfo } from '../api/AccountApi.js';
+import { fetchUserData } from '../api/account-api.js';
 import LoadingScreen from '../components/LoadingScreen';
 import { updateDisableSubmit, isValidEmail, isValidPhoneNumber, isValidName, isValidPassword } from '../validationFunc.js';
+import usePost from '../hooks/usePost.js';
+import Popup from '../components/Popup.js';
 
 const Account = () => {
 
@@ -16,28 +17,13 @@ const Account = () => {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [phone, setPhone] = useState('');
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
-  const [responseSuccess, setResponseSuccess] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState(true);
   const [disablePasswordSubmit, setDisablePasswordSubmit] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  const [Loading, setLoading] = useState(true);
+  const { popupMessage, responseSuccess, showPopup, handlePost, closePopup } = usePost();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchUserInfo();
-        setUserData(data);
-        setEmail(data.email);
-        setName(data.name);
-        setSurname(data.surname);
-        setPhone(data.phone);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error fetching info:', error);
-      }
-    };
-    fetchData();
+    fetchUserData(setUserData, setEmail, setName, setSurname, setPhone, setLoading)
   }, []);
 
 
@@ -59,7 +45,7 @@ const Account = () => {
       phone: phone,
       isTmp: false
     };
-    await handlePost('clients/update-user-info', requestBody, setPopupMessage, setResponseSuccess, setShowPopup);
+    await handlePost('clients/update-user-info', requestBody);
   };
 
   const handlePasswordSubmit = async (e) => {
@@ -68,19 +54,19 @@ const Account = () => {
       newPassword: newPassword,
       oldPassword: oldPassword
     };
-    await handlePost('clients/update-user-password', requestBody, setPopupMessage, setResponseSuccess, setShowPopup);
+    await handlePost('clients/update-user-password', requestBody);
   };
 
   const logout = async (e) => {
-    await handlePost('auth/logout', {}, setPopupMessage, setResponseSuccess, setShowPopup)
+    await handlePost('auth/logout', {})
     localStorage.clear();
     localStorage.setItem("loggedIn", false);
-    setTimeout(function() {
-       window.location.href = '/login';
-    }, 3000);
+    setTimeout(function () {
+      window.location.href = '/login';
+    }, 2000);
   };
 
-  if (isLoading) {
+  if (Loading) {
     return <LoadingScreen />;
   }
 
@@ -103,15 +89,14 @@ const Account = () => {
           <button type='submit' className='site-button' disabled={disablePasswordSubmit}>Zmień hasło</button>
           <button type='button' className='site-button' onClick={logout}>Wyloguj</button>
         </form>
-        
+
       </div>
-      {showPopup && (
-        <div className={`popup ${responseSuccess ? 'success' : 'failed'}`}>
-          {/* Display popup message */}
-          <p>{popupMessage}</p>
-          <button className='site-button' onClick={() => setShowPopup(false)} >Zamknij</button>
-        </div>
-      )}
+      <Popup
+        showPopup={showPopup}
+        popupMessage={popupMessage}
+        responseSuccess={responseSuccess}
+        onClose={closePopup}
+      />
     </div>
   );
 }

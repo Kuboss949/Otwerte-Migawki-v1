@@ -18,19 +18,21 @@ const Login = () => {
       password: password
     };
     await handlePost('auth/login', requestBody);
-    localStorage.clear();
-    localStorage.setItem("loggedIn", true);
+    
   };
 
-  if(responseSuccess){
-    setTimeout(function() {
+  if (responseSuccess) {
+    localStorage.clear();
+    localStorage.setItem("username", email);
+    localStorage.setItem("loggedIn", true);
+    setTimeout(function () {
       window.location.href = '/';
-    }, 3000);
+    }, 2000);
   }
 
   return (
     <div className='login-page flex-centered'>
-      <img src='images/logo.png' alt='logo'/>
+      <img src='images/logo.png' alt='logo' />
       <form className='flex-centered login-form' id='login-form' onSubmit={handleSubmit}>
         <InputBox label='Email' name='email' value={email} onChange={(e) => setEmail(e.target.value)} />
         <InputBox label='Hasło' name='password' type='password' value={password} onChange={(e) => setPassword(e.target.value)} />

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import './components-css/Popup.css';
 
 const Popup = ({ showPopup, popupMessage, responseSuccess, onClose }) => {
   if (!showPopup) return null;

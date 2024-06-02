@@ -2,6 +2,7 @@ package pl.otwartemigawki.OtwarteMigawkiApp.controller;
 
 import exceptions.RegistrationException;
 import exceptions.UserNotFoundException;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('user')")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<List<UserWithDetailsDTO>> getAllClients() {
         List<User> users = userService.getAllUsers(); // Assuming you have a service method to fetch all users
         List<UserWithDetailsDTO> dtos = users.stream()
@@ -51,6 +52,12 @@ public class UserController {
     public ResponseEntity<List<UserSessionDetailsDTO>> getClientsWithUnassignedGallery() {
         List<UserSessionDetailsDTO> users = userService.getUsersWithUnassignedGallery(); // Assuming you have a service method to fetch all users
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-username")
+    public ResponseEntity<ApiResponseDTO> getAllClients(@CookieValue(name = "jwtToken", defaultValue = "defaultValue") String cookieValue) {
+        User user = userService.getUserByEmail(jwtService.extractUserName(cookieValue));
+        return ResponseEntity.ok(new ApiResponseDTO(user.getUsername(), true));
     }
 
 

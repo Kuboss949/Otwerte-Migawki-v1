@@ -3,35 +3,22 @@ import Calendar from 'react-calendar';
 import "../css/AddDates.css";
 import AppBar from '../components/AppBar';
 import { SelectBox } from '../components/InputBox';
-import { fetchData } from '../api/GetApi';
-import { handlePost } from '../api/PostApi';
 import LoadingScreen from '../components/LoadingScreen';
+import Popup from '../components/Popup.js';
+import usePost from '../hooks/usePost.js';
+import { fetchDatesData } from '../api/add-dates-api.js';
 
 const AddDates = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [datesTimes, setDatesTimes] = useState([]); // State to manage selected dates and hours
-  const [selectedHour, setSelectedHour] = useState(null);
+  const [datesTimes, setDatesTimes] = useState([]);
   const [sessionTypes, setSessionTypes] = useState([]);
   const [availableDates, setAvailableDates] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [lastSelectedSession, setLastSelectedSession] = useState('');
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
-  const [responseSuccess, setResponseSuccess] = useState(false);
+  const { popupMessage, responseSuccess, showPopup, handlePost, closePopup } = usePost();
 
   useEffect(() => {
-    const fetchDataFromApi = async () => {
-      try {
-        const result = await fetchData('/api/session/all-enabled');
-        setSessionTypes(result.map(session => session.sessionTypeName));
-        const result2 = await fetchData('/api/session/fetchTimes');
-        setAvailableDates(result2);
-        setIsLoading(false);
-      } catch (error) {
-        setSessionTypes(["Nie udało się połączyć z serwerem"]);
-      }
-    };
-    fetchDataFromApi();
+    fetchDatesData(setSessionTypes, setAvailableDates, setLoading);
   }, []);
 
   const handleUpdateDates = async (e) => {
@@ -41,7 +28,7 @@ const AddDates = () => {
         sessionTypeName: lastSelectedSession,
         availableDates: datesTimes.filter(item => item.times.length > 0)
       };
-      await handlePost('/session/addTimes', requestBody, setPopupMessage, setResponseSuccess, setShowPopup);
+      await handlePost('/session/addTimes', requestBody);
     }
   };
 
@@ -75,15 +62,14 @@ const AddDates = () => {
   };
 
   const handleHourClick = (hour) => {
-    setSelectedHour(hour);
-    const dateKey = selectedDate.toLocaleDateString('en-CA'); // Get the date in YYYY-MM-DD format respecting local timezone
+    const dateKey = selectedDate.toLocaleDateString('en-CA'); 
     const updatedDatesTimes = [...datesTimes];
     const dateIndex = updatedDatesTimes.findIndex(d => d.date === dateKey);
 
     if (dateIndex !== -1) {
       const hourIndex = updatedDatesTimes[dateIndex].times.indexOf(hour);
       if (hourIndex !== -1) {
-        updatedDatesTimes[dateIndex].times.splice(hourIndex, 1); // Remove hour if it already exists
+        updatedDatesTimes[dateIndex].times.splice(hourIndex, 1); 
       } else {
         updatedDatesTimes[dateIndex].times.push(hour);
       }
@@ -104,12 +90,12 @@ const AddDates = () => {
       key={index}
       time={hour}
       datesTimes={datesTimes}
-      curr_date={selectedDate.toLocaleDateString('en-CA')} // Pass the date in YYYY-MM-DD format respecting local timezone
+      curr_date={selectedDate.toLocaleDateString('en-CA')} 
       handleHourClick={handleHourClick}
     />
   ));
 
-  if (isLoading) {
+  if (loading) {
     return <LoadingScreen />;
   }
 
@@ -143,13 +129,12 @@ const AddDates = () => {
         </div>
         <button className='site-button' onClick={handleUpdateDates}>Zatwierdź dla {lastSelectedSession}</button>
       </div>
-      {showPopup && (
-        <div className={`popup ${responseSuccess ? 'success' : 'failed'}`}>
-          {/* Display popup message */}
-          <p>{popupMessage}</p>
-          <button className='site-button' onClick={() => setShowPopup(false)} >Zamknij</button>
-        </div>
-      )}
+      <Popup
+        showPopup={showPopup}
+        popupMessage={popupMessage}
+        responseSuccess={responseSuccess}
+        onClose={closePopup}
+      />
     </div>
   );
 };

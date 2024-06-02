@@ -3,31 +3,21 @@ import { useParams } from 'react-router-dom';
 import AppBar from '../components/AppBar.js';
 import "../css/ClientGallery.css";
 import { Gallery } from "react-grid-gallery";
-import axios from 'axios';
 import LoadingScreen from '../components/LoadingScreen.js';
+import { fetchGalleryImages } from '../api/clients-gallery-api.js';
 
 
-let imagesToSelect = 2;
+let imagesToSelect = 3;
 const ClientGallery = () => {
-   
+
    const { id } = useParams();
    const [images, setImages] = useState([]);
    const [loading, setLoading] = useState(true);
 
 
    useEffect(() => {
-      const fetchSessionDetails = async () => {
-         try {
-            const galleryData = await axios.get('/api/gallery/' + id);
-            setImages(galleryData.data);
-         } catch (error) {
-            console.error('Error fetching data:', error);
-         } finally {
-            setLoading(false);
-         }
-      };
-      fetchSessionDetails();
-   }, []);
+      fetchGalleryImages(setImages, id, setLoading);
+   }, [id]);
 
 
    const handleSelect = (index) => {
@@ -48,7 +38,7 @@ const ClientGallery = () => {
    if (loading) {
       return <LoadingScreen />;
    }
-   console.log(images);
+
    return (
       <div>
          <AppBar />

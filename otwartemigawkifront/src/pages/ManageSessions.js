@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InputBox } from '../components/InputBox.js';
 import AppBar from '../components/AppBar.js';
 import "../css/ManageSessions.css";
-import { useTable } from 'react-table';
-import { fetchData } from '../api/GetApi.js';
 import usePost from '../hooks/usePost.js';
 import Popup from '../components/Popup.js';
 import axios from 'axios';
+import SessionTable from '../components/tables/SessionTable';
+import UpcomingSessionsTable from '../components/tables/UpcomingSessionsTable';
+import { fetchAllManageData } from '../api/manage-session-api.js';
 
 const ManageSessions = () => {
   const [sessionDetails, setSessionDetails] = useState([]);
@@ -18,18 +19,9 @@ const ManageSessions = () => {
   const [price, setPrice] = useState(null);
   const [photo, setPhoto] = useState(null);
 
-  const fetchAllSessions = async () => {
-    try {
-      const sessionData = await fetchData('/api/session/all');
-      const upcomingData = await fetchData('/api/session/all-upcoming');
-      setSessionDetails(sessionData);
-      setUpcomingSessions(upcomingData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    fetchAllManageData(setSessionDetails, setUpcomingSessions, setLoading);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,9 +30,8 @@ const ManageSessions = () => {
     formData.append('description', description);
     formData.append('price', price);
     formData.append('photo', photo);
-
     await handlePost('session/add', formData, true);
-    fetchAllSessions();
+    fetchAllManageData(setSessionDetails, setUpcomingSessions, setLoading);
   };
 
   const handleFileChange = (e) => {
@@ -49,108 +40,17 @@ const ManageSessions = () => {
 
   const handleToggle = async (id) => {
     await handlePost('session/change-disable-session-state/' + id, {});
-    fetchAllSessions();
+    fetchAllManageData(setSessionDetails, setUpcomingSessions, setLoading);
   };
 
   const handleDeleteSession = async (id) => {
     try {
       await axios.delete('/api/session/cancel-session/' + id);
-      fetchAllSessions();
+      fetchAllManageData(setSessionDetails, setUpcomingSessions, setLoading);
     } catch (error) {
       console.error("There was an error deleting the session type!", error);
     }
   };
-
-  useEffect(() => {
-    fetchAllSessions();
-  }, []);
-
-  const sessionColumns = useMemo(() => [
-    {
-      Header: "ID",
-      accessor: "sessionTypeId",
-    },
-    {
-      Header: "Nazwa sesji",
-      accessor: "sessionTypeName",
-    },
-    {
-      Header: "Cena",
-      accessor: "price",
-    },
-    {
-      Header: "Dezaktywowana",
-      accessor: "disabled",
-      Cell: ({ value }) => (value ? 'Tak' : 'Nie'),
-    },
-    {
-      Header: "Akcje",
-      Cell: ({ row }) => {
-        const isDisabled = row.original.disabled;
-        return (
-          <button className={isDisabled ? 'enable-button' : 'disable-button'}
-            onClick={() => handleToggle(row.original.sessionTypeId)}>
-            {isDisabled ? 'Aktywuj' : 'Dezaktywuj'}
-          </button>
-        );
-      },
-    },
-  ], []);
-
-  const upcomingColumns = useMemo(() => [
-    {
-      Header: "ID",
-      accessor: "id",
-    },
-    {
-      Header: "Nazwa sesji",
-      accessor: "sessionTypeName",
-    },
-    {
-      Header: "Data",
-      accessor: "date",
-    },
-    {
-      Header: "Imię",
-      accessor: "clientName",
-    },
-    {
-      Header: "Nazwisko",
-      accessor: "clientSurname",
-    },
-    {
-      Header: "Nr telefonu",
-      accessor: "clientPhone",
-    },
-    {
-      Header: "Akcje",
-      Cell: ({ row }) => (
-        <button className='deleteButton' onClick={() => handleDeleteSession(row.original.id)}>Odwołaj sesje</button>
-      )
-    },
-  ], []);
-
-  const {
-    getTableProps: getSessionTableProps,
-    getTableBodyProps: getSessionTableBodyProps,
-    headerGroups: sessionHeaderGroups,
-    rows: sessionRows,
-    prepareRow: prepareSessionRow
-  } = useTable({
-    columns: sessionColumns,
-    data: sessionDetails || [],
-  });
-
-  const {
-    getTableProps: getUpcomingTableProps,
-    getTableBodyProps: getUpcomingTableBodyProps,
-    headerGroups: upcomingHeaderGroups,
-    rows: upcomingRows,
-    prepareRow: prepareUpcomingRow
-  } = useTable({
-    columns: upcomingColumns,
-    data: upcomingSessions || [],
-  });
 
   return (
     <div>
@@ -182,33 +82,7 @@ const ManageSessions = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <table {...getSessionTableProps()}>
-              <thead>
-                {sessionHeaderGroups.map((headerGroup) => (
-                  <tr {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map((column) => (
-                      <th {...column.getHeaderProps()}>
-                        {column.render("Header")}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody {...getSessionTableBodyProps()}>
-                {sessionRows.map((row) => {
-                  prepareSessionRow(row);
-                  return (
-                    <tr {...row.getRowProps()}>
-                      {row.cells.map((cell) => (
-                        <td {...cell.getCellProps()}>
-                          {cell.render("Cell")}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <SessionTable data={sessionDetails} handleToggle={handleToggle} />
           )}
         </div>
       </div>
@@ -218,33 +92,7 @@ const ManageSessions = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <table {...getUpcomingTableProps()}>
-              <thead>
-                {upcomingHeaderGroups.map((headerGroup) => (
-                  <tr {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map((column) => (
-                      <th {...column.getHeaderProps()}>
-                        {column.render("Header")}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody {...getUpcomingTableBodyProps()}>
-                {upcomingRows.map((row) => {
-                  prepareUpcomingRow(row);
-                  return (
-                    <tr {...row.getRowProps()}>
-                      {row.cells.map((cell) => (
-                        <td {...cell.getCellProps()}>
-                          {cell.render("Cell")}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <UpcomingSessionsTable data={upcomingSessions} handleDeleteSession={handleDeleteSession} />
           )}
         </div>
       </div>
