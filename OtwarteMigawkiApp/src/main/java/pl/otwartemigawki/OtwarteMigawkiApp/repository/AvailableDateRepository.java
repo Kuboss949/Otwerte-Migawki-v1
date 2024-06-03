@@ -9,5 +9,5 @@ import pl.otwartemigawki.OtwarteMigawkiApp.model.SessionType;
 import java.time.LocalDate;
 
 public interface AvailableDateRepository extends JpaRepository<AvailableDate, Integer> {
-
+    AvailableDate findByDateAndIdSessionType(LocalDate date, SessionType idSessionType);
 }
