@@ -27,15 +27,14 @@ App for for photographer with adding online galleries for clients
 ## Demo
 
 ### Login screen
-![alt text](https://github.com/Kuboss949/WdPAI/blob/Database/demo/Zrzut%20ekranu%202024-01-19%20204141.png?raw=true)
+![alt text](https://github.com/Kuboss949/Otwerte-Migawki-v1/blob/main/demo/login.png?raw=true)
 ### Reservation
-![alt text](https://github.com/Kuboss949/WdPAI/blob/Database/demo/Zrzut%20ekranu%202024-01-19%20204420.png?raw=true)
+![alt text](https://github.com/Kuboss949/Otwerte-Migawki-v1/blob/main/demo/reservation.png?raw=true)
 ### Online Gallery
-![alt text](https://github.com/Kuboss949/WdPAI/blob/Database/demo/Zrzut%20ekranu%202024-01-19%20204704.png?raw=true)
-### Statistics and Awards
-![alt text](https://github.com/Kuboss949/WdPAI/blob/Database/demo/Zrzut%20ekranu%202024-01-19%20205032.png?raw=true)
-### User Profile
-![alt text](https://github.com/Kuboss949/WdPAI/blob/Database/demo/Zrzut%20ekranu%202024-01-19%20205113.png?raw=true)
+![alt text](https://github.com/Kuboss949/Otwerte-Migawki-v1/blob/main/demo/gall.png?raw=true)
+### Session Management
+![alt text](https://github.com/Kuboss949/Otwerte-Migawki-v1/blob/main/demo/add.png?raw=true)
+
 
 
 
@@ -50,7 +49,7 @@ App for for photographer with adding online galleries for clients
 ## ERD
 
 
-![alt text](https://github.com/Kuboss949/WdPAI/blob/Database/demo/erd.png?raw=true)
+![alt text](https://github.com/Kuboss949/Otwerte-Migawki-v1/blob/main/demo/erd.png?raw=true)
 
 ## Installation
 
